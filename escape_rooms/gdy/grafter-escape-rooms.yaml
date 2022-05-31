@@ -41,7 +41,7 @@ Environment:
       Type: SPRITE_2D
       TileSize: 24
       RotateAvatarImage: false
-      HighlightPlayers: true
+      HighlightPlayers: false
     PlayerSprite2D:
       Type: SPRITE_2D
       TileSize: 24

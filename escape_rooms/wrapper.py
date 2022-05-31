@@ -1,32 +1,33 @@
 from pathlib import Path
 
+import yaml
 import gym
 from griddly import GymWrapper
-from griddly.util.action_space import MultiAgentActionSpace
-
-from escape_rooms.level_generators.crafter_generator import CrafterLevelGenerator
-
 
 class EscapeRoomWrapper(gym.Wrapper):
     def __init__(
             self,
-            player_observer_type="PlayerSprite2D",
+            player_observer_type="Vector",
             global_observer_type="GlobalSprite2D",
-            level_generator=None,
+            level_generator_cls=None,
     ):
 
         current_file = Path(__file__).parent
+        with open(current_file.joinpath("gdy").joinpath("grafter-escape-rooms.yaml")) as f:
+            gdy = yaml.safe_load(f)
+
+            self._level_generator = level_generator_cls(gdy)
+
+            yaml_string = yaml.dump(gdy)
 
         self._genv = GymWrapper(
+            yaml_string=yaml_string,
             yaml_file=str(current_file.joinpath("gdy").joinpath("grafter-escape-rooms.yaml")),
             global_observer_type=global_observer_type,
             player_observer_type=player_observer_type,
             gdy_path=str(current_file.joinpath("gdy")),
             image_path=str(current_file.joinpath("assets")),
         )
-
-        if level_generator is not None:
-            self._generator = level_generator
 
         self._genv.reset()
 
@@ -59,14 +60,9 @@ class EscapeRoomWrapper(gym.Wrapper):
         g_action = self.flat_action_mapping[action]
         return self.env.step(g_action)
 
-    def reset(self):
-        if self._generator is not None:
-            level_string = self._generator.generate()
-            reset_obs = self.env.reset(level_string=level_string)
-        else:
-            reset_obs = self.env.reset(level_id=self._level_id)
-
-        return reset_obs
+    def reset(self, seed=100):
+        level_string = self._level_generator.generate(seed)
+        return self.env.reset(level_string=level_string)
 
     def render(self, mode="human", observer=0):
         return self.env.render(mode=mode, observer=observer)

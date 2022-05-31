@@ -3,6 +3,14 @@ import numpy as np
 
 class RotateTranslateGenerator():
 
+    def __init__(self, gdy):
+        super().__init__(gdy)
+        self._original_levels = gdy['Environment']['Levels']
+        self._all_levels = []
+
+        for level_string in self._original_levels:
+            self._all_levels.extend(self._augment_level_string(level_string))
+
     def _string_to_array(self, level_string):
         lines = level_string.splitlines()
         array_lines = []
@@ -11,7 +19,6 @@ class RotateTranslateGenerator():
             array_lines.append(chars)
 
         return np.array(array_lines)
-
 
     def _array_to_string(self, array):
 
@@ -25,8 +32,6 @@ class RotateTranslateGenerator():
             level_string.append("\n")
 
         return "".join(level_string)
-
-
 
     def _augment_level_string(self, level_string):
         chararray = self._string_to_array(level_string)
@@ -44,23 +49,13 @@ class RotateTranslateGenerator():
 
         return augmented_levels
 
-    def __init__(self, gdy):
-        self._original_levels = gdy['Environment']['Levels']
-        self._all_levels = []
-
-        for level_string in self._original_levels:
-            self._all_levels.extend(self._augment_level_string(level_string))
-
-
     def generate(self, seed):
 
         assert seed < len(self._all_levels)
         return self._all_levels[seed]
 
 
-
 if __name__ == "__main__":
-
     level_string = """.   p/G .   .   .   G   G   G   .   .   .   .   G   d/G G   .   .   .   .   
 .   G   .   .   G   .   .   .   G   .   .   G   .   W   .   G   .   .   .   
 .   G   .   .   G   .   .   .   G   W   W   G   L   L   .   G   .   .   .   

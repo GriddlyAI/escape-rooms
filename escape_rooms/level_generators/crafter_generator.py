@@ -1,6 +1,6 @@
 import functools
 
-from grafter.level_generators.base import LevelGenerator
+from escape_rooms.level_generators.base import LevelGenerator
 import numpy as np
 import opensimplex
 
@@ -10,9 +10,10 @@ class CrafterLevelGenerator(LevelGenerator):
     Pretty much this: https://github.com/danijar/crafter/blob/main/crafter/worldgen.py
     """
 
-    def __init__(self, seed, width, height, num_players):
-        super().__init__(seed, width, height, num_players, "Crafter")
-
+    def __init__(self, gdy):
+        self._width = 30
+        self._height = 30
+        super().__init__(gdy)
         self._walkable = {"G", "P", "S"}
 
     def _get_level_string(self, world):
@@ -24,7 +25,8 @@ class CrafterLevelGenerator(LevelGenerator):
 
         return "".join(level_string)
 
-    def generate(self):
+    def generate(self, seed):
+        self._random = np.random.RandomState(seed)
         """
         Generate a crafter-style level and return the griddly level string for it
         :return:
@@ -46,10 +48,8 @@ class CrafterLevelGenerator(LevelGenerator):
 
         possible_player_locations = list(not_tunnels & grass)
 
-        for p in range(self._num_players):
-            players.append(
-                self._place_player(world, possible_player_locations, players)
-            )
+        self._place_player(world, possible_player_locations, players)
+
 
         for x in range(self._width):
             for y in range(self._height):
