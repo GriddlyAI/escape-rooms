@@ -41,6 +41,17 @@ class EscapeRoomWrapper(gym.Wrapper):
 
         # flatten the action space
         self.action_space, self.flat_action_mapping = self._flatten_action_space()
+        self.observation_space = self._calc_observation_space(self._num_global_vars)
+
+    def _calc_observation_space(self, num_global_vars):
+        if self.env._player_observer_type[0] == gd.ObserverType.VECTOR:
+            space_with_global_vars = [
+                self.observation_space.shape[0] + num_global_vars,
+                self.observation_space.shape[1],
+                self.observation_space.shape[2]
+            ]
+
+            return gym.spaces.Box(low=0, high=1, shape=space_with_global_vars, dtype=np.uint8)
 
     def _flatten_action_space(self):
         flat_action_mapping = []
