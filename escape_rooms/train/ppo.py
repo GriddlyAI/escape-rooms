@@ -14,6 +14,7 @@ import torch.optim as optim
 from torch.distributions.categorical import Categorical
 from torch.utils.tensorboard import SummaryWriter
 
+from escape_rooms.level_generators.rotate_translate_generator import RotateTranslateGenerator
 from escape_rooms.wrapper import EscapeRoomWrapper
 
 def parse_args():
@@ -89,7 +90,7 @@ def parse_args():
 
 def make_env(seed, idx, capture_video, run_name):
     def thunk():
-        env = EscapeRoomWrapper()
+        env = EscapeRoomWrapper(level_generator_cls=RotateTranslateGenerator)
         env = gym.wrappers.RecordEpisodeStatistics(env)
         if capture_video:
             if idx == 0:

@@ -1,8 +1,10 @@
 from pathlib import Path
+import numpy as np
 
 import yaml
 import gym
 from griddly import GymWrapper
+from griddly import gd
 
 class EscapeRoomWrapper(gym.Wrapper):
     def __init__(
@@ -28,6 +30,8 @@ class EscapeRoomWrapper(gym.Wrapper):
             gdy_path=str(current_file.joinpath("gdy")),
             image_path=str(current_file.joinpath("assets")),
         )
+
+        self._vector_global_vars = ["inv_wood_sword","inv_stone_sword","inv_iron_sword","inv_stone","inv_coal","inv_wood","inv_iron","health"]
 
         self._genv.reset()
 
@@ -58,7 +62,18 @@ class EscapeRoomWrapper(gym.Wrapper):
 
     def step(self, action):
         g_action = self.flat_action_mapping[action]
-        return self.env.step(g_action)
+
+        if self._genv._player_observer_type[0] == gd.ObserverType.VECTOR:
+            # Sellotape the global variable we care about to the obs
+            obs, reward, info, done = self.env.step(g_action)
+            global_vars = [g[1] for k,g in self._genv.game.get_global_variable(self._vector_global_vars).items()]
+            global_var_values = np.array(global_vars)
+            tiled_global_vars = np.tile(global_var_values.reshape((8,1,1)),reps=(1,obs.shape[1],obs.shape[2]))
+            all_obs = np.concatenate([obs, tiled_global_vars], axis=0)
+        else:
+            all_obs, reward, info, done = self.env.step(g_action)
+
+        return all_obs, reward, info, done
 
     def reset(self, seed=100):
         level_string = self._level_generator.generate(seed)

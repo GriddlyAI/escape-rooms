@@ -19,18 +19,10 @@ Environment:
         - inv_wood_sword
         - inv_stone_sword
         - inv_iron_sword
-        - inv_wood_pickaxe
-        - inv_stone_pickaxe
-        - inv_iron_pickaxe
-        - inv_sapling
         - inv_stone
         - inv_coal
         - inv_wood
         - inv_iron
-        - inv_diamond
-        - inv_food
-        - inv_drink
-        - inv_energy
         - health
     Vector:
       IncludeRotation: true

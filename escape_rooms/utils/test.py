@@ -8,4 +8,7 @@ env.reset(seed=567)
 
 env.render(observer="global")
 
+obs, reward, info, done = env.step(0)
+
 pass
+
