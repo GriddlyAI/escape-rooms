@@ -1,7 +1,9 @@
 import numpy as np
 
+from escape_rooms.level_generators.base import LevelGenerator
 
-class RotateTranslateGenerator():
+
+class RotateTranslateGenerator(LevelGenerator):
 
     def __init__(self, gdy):
         super().__init__(gdy)
