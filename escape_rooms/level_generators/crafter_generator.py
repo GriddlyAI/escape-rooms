@@ -1,6 +1,6 @@
 import functools
 
-from grafter.level_generators.base import LevelGenerator
+from escape_rooms.level_generators.base import LevelGenerator
 import numpy as np
 import opensimplex
 

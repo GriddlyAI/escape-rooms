@@ -15,7 +15,7 @@ class EscapeRoomWrapper(gym.Wrapper):
             level_generator=None,
     ):
 
-        current_file = Path(__file__).parent
+        current_file = Path(__file__).parent.parent
 
         self._genv = GymWrapper(
             yaml_file=str(current_file.joinpath("gdy").joinpath("grafter-escape-rooms.yaml")),
