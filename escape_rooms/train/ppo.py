@@ -14,6 +14,7 @@ import torch.optim as optim
 from torch.distributions.categorical import Categorical
 from torch.utils.tensorboard import SummaryWriter
 
+from escape_rooms.level_generators.rotate_translate_generator import RotateTranslateGenerator
 from escape_rooms.wrapper import EscapeRoomWrapper
 
 def parse_args():
@@ -87,9 +88,9 @@ def parse_args():
     return args
 
 
-def make_env(height, width, observer_type, seed, idx, capture_video, run_name):
+def make_env(seed, idx, capture_video, run_name):
     def thunk():
-        env = EscapeRoomWrapper(height, width, generator_seed=seed, player_observer_type=observer_type)
+        env = EscapeRoomWrapper(level_generator_cls=RotateTranslateGenerator)
         env = gym.wrappers.RecordEpisodeStatistics(env)
         if capture_video:
             if idx == 0:
@@ -206,7 +207,7 @@ if __name__ == "__main__":
 
     # env setup
     envs = gym.vector.SyncVectorEnv(
-        [make_env(args.height, args.width, args.observer_type, args.seed + i, i, args.capture_video, run_name) for i in range(args.num_envs)]
+        [make_env(args.seed + i, i, args.capture_video, run_name) for i in range(args.num_envs)]
     )
     assert isinstance(envs.single_action_space, gym.spaces.Discrete), "only discrete action space is supported"
 
