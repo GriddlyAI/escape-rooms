@@ -16,9 +16,9 @@ Environment:
       IncludeRotation:
         - player
       GlobalVariableMapping:
-        - inv_wood_sword
-        - inv_stone_sword
-        - inv_iron_sword
+        - inv_wood_pickaxe
+        - inv_stone_pickaxe
+        - inv_iron_pickaxe
         - inv_stone
         - inv_coal
         - inv_wood
@@ -29,6 +29,15 @@ Environment:
       Width: 9
       Height: 7
       OffsetY: -1
+      GlobalVariableMapping:
+        - inv_wood_pickaxe
+        - inv_stone_pickaxe
+        - inv_iron_pickaxe
+        - inv_stone
+        - inv_coal
+        - inv_wood
+        - inv_iron
+        - health
     GlobalSprite2D:
       Type: SPRITE_2D
       TileSize: 24
