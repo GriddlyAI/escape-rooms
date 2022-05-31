@@ -31,8 +31,8 @@ class PlayWrapper(gym.Wrapper):
 
     def __init__(self, env, seed=100):
         assert isinstance(
-            env, GrafterWrapper
-        ), "This wrapper only works with the GrafterWrapper environment"
+            env, EscapeRoomWrapper
+        ), "This wrapper only works with the EscapeRoomWrapper environment"
         super().__init__(env)
 
         self._seed = seed
