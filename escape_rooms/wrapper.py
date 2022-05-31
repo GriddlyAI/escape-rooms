@@ -40,6 +40,17 @@ class EscapeRoomWrapper(gym.Wrapper):
 
         # flatten the action space
         self.action_space, self.flat_action_mapping = self._flatten_action_space()
+        self.observation_space = self._calc_observation_space(self._num_global_vars)
+
+    def _calc_observation_space(self, num_global_vars):
+        if self.env._player_observer_type[0] == gd.ObserverType.VECTOR:
+            space_with_global_vars = [
+                self.observation_space.shape[0] + num_global_vars,
+                self.observation_space.shape[1],
+                self.observation_space.shape[2]
+            ]
+
+            return gym.spaces.Box(low=0, high=1, shape=space_with_global_vars, dtype=np.uint8)
 
     def _flatten_action_space(self):
         flat_action_mapping = []
@@ -61,16 +72,19 @@ class EscapeRoomWrapper(gym.Wrapper):
 
         return action_space, flat_action_mapping
 
+    def _wrap_vector_obs(self, obs):
+        global_vars = [g[1] for k, g in self.env.game.get_global_variable(self._vector_global_vars).items()]
+        global_var_values = np.array(global_vars, dtype=np.uint8)
+        tiled_global_vars = np.tile(global_var_values.reshape((8, 1, 1)), reps=(1, obs.shape[1], obs.shape[2]))
+        return np.concatenate([obs, tiled_global_vars], axis=0)
+
     def step(self, action):
         g_action = self.flat_action_mapping[action]
 
         if self.env._player_observer_type[0] == gd.ObserverType.VECTOR:
             # Sellotape the global variable we care about to the obs
             obs, reward, info, done = self.env.step(g_action)
-            global_vars = [g[1] for k, g in self.env.game.get_global_variable(self._vector_global_vars).items()]
-            global_var_values = np.array(global_vars)
-            tiled_global_vars = np.tile(global_var_values.reshape((8, 1, 1)), reps=(1, obs.shape[1], obs.shape[2]))
-            all_obs = np.concatenate([obs, tiled_global_vars], axis=0)
+            all_obs = self._wrap_vector_obs(obs)
         else:
             all_obs, reward, info, done = self.env.step(g_action)
 
@@ -78,7 +92,9 @@ class EscapeRoomWrapper(gym.Wrapper):
 
     def reset(self, seed=100):
         level_string = self._level_generator.generate(seed)
-        return self.env.reset(level_string=level_string)
+        obs = self.env.reset(level_string=level_string)
+        self.observation_space = self._calc_observation_space(self._num_global_vars)
+        return self._wrap_vector_obs(obs)
 
     def render(self, mode="human", observer=0):
         return self.env.render(mode=mode, observer=observer)

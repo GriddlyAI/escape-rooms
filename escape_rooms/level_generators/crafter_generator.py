@@ -11,8 +11,8 @@ class CrafterLevelGenerator(LevelGenerator):
     """
 
     def __init__(self, gdy):
-        self._width = 30
-        self._height = 30
+        self._width = 20
+        self._height = 20
         super().__init__(gdy)
         self._walkable = {"G", "P", "S"}
 
@@ -49,6 +49,7 @@ class CrafterLevelGenerator(LevelGenerator):
         possible_player_locations = list(not_tunnels & grass)
 
         self._place_player(world, possible_player_locations, players)
+        self._place_plant(world, possible_player_locations, players)
 
 
         for x in range(self._width):
@@ -70,6 +71,21 @@ class CrafterLevelGenerator(LevelGenerator):
 
             if dist > 10:
                 world[player_pos[0], player_pos[1]] = f"p{len(players)+1}/G"
+                return player_pos
+
+    def _place_plant(self, world, possible_locations, players):
+
+        plant_location_valid = False
+
+        while not plant_location_valid:
+            player_pos = possible_locations[
+                self._random.choice(len(possible_locations))
+            ]
+            dist = self._get_min_player_distance(player_pos, players)
+            possible_locations.remove(player_pos)
+
+            if dist > 10:
+                world[player_pos[0], player_pos[1]] = f"+{len(players)+1}/G"
                 return player_pos
 
     def _set_material(self, world, pos, simplex, tunnels):
@@ -138,6 +154,7 @@ class CrafterLevelGenerator(LevelGenerator):
             world[x, y] = f"!/{material}"
         elif material == "P" and tunnels[x, y] and uniform() > 0.95:  # skeleton
             world[x, y] = f"@/{material}"
+
 
     def _simplex(self, simplex, x, y, z, sizes, normalize=True):
         if not isinstance(sizes, dict):
