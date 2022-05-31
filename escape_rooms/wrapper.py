@@ -14,7 +14,6 @@ class EscapeRoomWrapper(gym.Wrapper):
             global_observer_type="GlobalSprite2D",
             level_generator_cls=None,
     ):
-
         current_file = Path(__file__).parent
         with open(current_file.joinpath("gdy").joinpath("grafter-escape-rooms.yaml")) as f:
             gdy = yaml.safe_load(f)
