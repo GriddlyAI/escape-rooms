@@ -15,9 +15,14 @@ from torch.distributions.categorical import Categorical
 from torch.utils.tensorboard import SummaryWriter
 
 from escape_rooms.level_generators.rotate_translate_generator import (
+    LevelGenerator,
     RotateTranslateGenerator,
 )
+from escape_rooms.level_generators.crafter_generator import (
+    CrafterLevelGenerator,
+)
 from escape_rooms.wrapper import EscapeRoomWrapper
+from escape_rooms.procgen_wrapper import UniformSeedSettingWrapper
 
 
 def parse_args():
@@ -41,10 +46,11 @@ def parse_args():
         help="the experiment group name in wandb")
     parser.add_argument("--capture-video", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
         help="weather to capture videos of the agent performances (check out `videos` folder)")
-    parser.add_argument("--checkpoint-interval", type=int, default="10000")
+    parser.add_argument("--checkpoint-interval", type=int, default="500")
+    parser.add_argument("--checkpoint-path", type=str, default="/private/home/samvelyan/grafter")
 
     # Algorithm specific arguments
-    parser.add_argument("--total-timesteps", type=int, default=500000,
+    parser.add_argument("--total-timesteps", type=int, default=50000000,
         help="total timesteps of the experiments")
     parser.add_argument("--learning-rate", type=float, default=2.5e-4,
         help="the learning rate of the optimizer")
@@ -96,7 +102,9 @@ def parse_args():
 
 def make_env(seed, idx, capture_video, run_name):
     def thunk():
-        env = EscapeRoomWrapper(level_generator_cls=RotateTranslateGenerator)
+        # env = EscapeRoomWrapper(level_generator_cls=RotateTranslateGenerator)
+        env = EscapeRoomWrapper(level_generator_cls=CrafterLevelGenerator)
+        env = UniformSeedSettingWrapper(env)
         env = gym.wrappers.RecordEpisodeStatistics(env)
         if capture_video:
             if idx == 0:
@@ -286,6 +294,8 @@ if __name__ == "__main__":
 
     for update in range(1, num_updates + 1):
         # Annealing the rate if instructed to do so.
+
+        print(f"Update {update} / {num_updates}.")
         if args.anneal_lr:
             frac = 1.0 - (update - 1.0) / num_updates
             lrnow = frac * args.learning_rate
@@ -314,9 +324,9 @@ if __name__ == "__main__":
 
             for item in info:
                 if "episode" in item.keys():
-                    print(
-                        f"global_step={global_step}, episodic_return={item['episode']['r']}"
-                    )
+                    # print(
+                    #     f"global_step={global_step}, episodic_return={item['episode']['r']}"
+                    # )
                     writer.add_scalar(
                         "charts/episodic_return",
                         item["episode"]["r"],
@@ -457,6 +467,26 @@ if __name__ == "__main__":
             np.nan if var_y == 0 else 1 - np.var(y_true - y_pred) / var_y
         )
 
+        # Checkpoint models
+        if update > 0 and update % args.checkpoint_interval == 0:
+            checkpoint_dir = os.path.join(
+                os.path.abspath(args.checkpoint_path), run_name
+            )
+            checkpoint_full_path = os.path.join(
+                checkpoint_dir, f"checkpoint_{update}.tar"
+            )
+            os.makedirs(checkpoint_dir, exist_ok=True)
+            torch.save(
+                {
+                    "model_state_dict": agent.state_dict(),
+                    "optimizer_state_dict": optimizer.state_dict(),
+                },
+                checkpoint_full_path,
+            )
+            print(
+                f"Saving checkpoint after {update} updates at {checkpoint_full_path}"
+            )
+
         # TRY NOT TO MODIFY: record rewards for plotting purposes
         writer.add_scalar(
             "charts/learning_rate",
@@ -474,7 +504,6 @@ if __name__ == "__main__":
         writer.add_scalar(
             "losses/explained_variance", explained_var, global_step
         )
-        print("SPS:", int(global_step / (time.time() - start_time)))
         writer.add_scalar(
             "charts/SPS",
             int(global_step / (time.time() - start_time)),
@@ -483,3 +512,5 @@ if __name__ == "__main__":
 
     envs.close()
     writer.close()
+
+    print(f"Training complete after {num_updates} updates.")
