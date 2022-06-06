@@ -85,7 +85,7 @@ def load_griddly_model(xp_path, model_tar):
     # meta_json_file = open(meta_json_path)
     # xp_flags = DotDict(json.load(meta_json_file)['args'])
 
-    model = Agent((7, 9, 51), 12)
+    model = Agent((51, 9, 7), 12)
 
     model_checkpoint = torch.load(model_path, map_location='cpu')
     model.load_state_dict(model_checkpoint['model_state_dict'])
@@ -94,8 +94,8 @@ def load_griddly_model(xp_path, model_tar):
 
 
 def convert2tf_and_export(model, xp_flags, export_path):
-    x = torch.randn(1, 7, 9, 51, requires_grad=False)  # dummy input
-    tf_model = pytorch_to_tf(model, x, [(7, 9, 51,)], change_ordering=True, verbose=True, export_path=export_path)
+    x = torch.randn(1, 51, 9, 7, requires_grad=False)  # dummy input
+    tf_model = pytorch_to_tf(model, x, [(51, 9, 7,)], change_ordering=True, verbose=True, export_path=export_path)
     return tf_model
 
 """
