@@ -71,7 +71,13 @@ if __name__ == "__main__":
     #     f"{env_name} All", fontdict={"fontsize": 18}
     # )  # Add a title to the axes.
 
-    ax.plot(xs, mean_returns_human, label="Human Data", color=sns_colors[0])
+    ax.plot(
+        xs,
+        mean_returns_human,
+        label="Human Data",
+        color=sns_colors[0],
+        marker="o",
+    )
     ax.fill_between(
         xs,
         std_returns_human_l,
@@ -81,7 +87,11 @@ if __name__ == "__main__":
     )
 
     ax.plot(
-        xs, mean_returns_generator, label="Generator Data", color=sns_colors[1]
+        xs,
+        mean_returns_generator,
+        label="Generator Data",
+        color=sns_colors[1],
+        marker="o",
     )
     ax.fill_between(
         xs,
@@ -97,6 +107,6 @@ if __name__ == "__main__":
     )  # Add an x-label to the axes.
     ax.set_ylabel("Return", fontsize=16)  # Add a y-label to the axes.
     # plt.xlabel('xlabel', f)
-    filename = os.path.join(f"vis.pdf")
+    filename = os.path.join(f"eval.pdf")
     plt.savefig(filename, bbox_inches="tight")
     print(f"Saving round robin plot at {filename}")
