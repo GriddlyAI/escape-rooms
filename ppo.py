@@ -5,6 +5,7 @@ import os
 import random
 import time
 from distutils.util import strtobool
+from pathlib import Path
 
 import gym
 import numpy as np
@@ -235,6 +236,10 @@ if __name__ == "__main__":
     if args.track:
         import wandb
 
+        data_path = Path(args.data_dir).absolute()
+        data_path.mkdir(parents=True, exist_ok=True)
+        data_dir = str(data_path)
+
         wandb.init(
             project=args.wandb_project_name,
             entity=args.wandb_entity,
@@ -244,6 +249,7 @@ if __name__ == "__main__":
             name=run_name,
             monitor_gym=True,
             save_code=True,
+            dir=data_dir
         )
     writer = SummaryWriter(f"runs/{run_name}")
     writer.add_text(
