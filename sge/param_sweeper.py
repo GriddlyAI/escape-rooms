@@ -45,7 +45,7 @@ trial=${{SGE_TASK_ID}}
 
 module purge
 module load cuda anaconda3 vulkan-sdk
-conda activate conda_poetry_base
+conda activate escape
 
 export PYTHONUNBUFFERED=1
 
