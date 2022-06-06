@@ -98,9 +98,11 @@ if __name__ == "__main__":
         envs.single_action_space, gym.spaces.Discrete
     ), "only discrete action space is supported"
 
-    # Load checkpointed agent
-    agent = Agent(envs).to(device)
+    observation_space = envs.single_observation_space
+    action_space = envs.single_action_space
 
+    # Load checkpointed agent
+    agent = Agent(observation_space.shape, action_space.n).to(device)
     # ALGO Logic: Storage setup
     obs = torch.zeros(
         (args.num_steps, args.num_envs) + envs.single_observation_space.shape

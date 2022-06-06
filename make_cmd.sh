@@ -13,12 +13,12 @@ function onCtrlC () {
   exit 1
 }
 
-tag=${1:-Grafter-initial}
+tag=${1:-Grafter-Mon}
 date=`date +%s`
 declare -a lrs=("1e-4" "2.5e-4" "5e-4")
 declare -a lrs_aneal=("True" "False")
-declare -a nsteps=("128" "256")
-declare -a num_minibatches=("4" "8")
+declare -a nsteps=("256")
+declare -a num_minibatches=("4")
 declare -a seeds=("1" "2" "3" "4" "5" "6")
 
 # run parallel
