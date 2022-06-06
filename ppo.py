@@ -136,7 +136,7 @@ class ConvSequence(nn.Module):
         x = nn.functional.max_pool2d(x, kernel_size=3, stride=2, padding=1)
         x = self.res_block0(x)
         x = self.res_block1(x)
-        assert x.shape[1:] == self.get_output_shape()
+        #assert x.shape[1:] == self.get_output_shape()
         return x
 
     def get_output_shape(self):
@@ -145,9 +145,9 @@ class ConvSequence(nn.Module):
 
 
 class Agent(nn.Module):
-    def __init__(self, envs):
+    def __init__(self, observation_shape, num_actions):
         super().__init__()
-        h, w, c = envs.single_observation_space.shape
+        h, w, c = observation_shape
         shape = (c, h, w)
         conv_seqs = []
         for out_channels in [16, 32, 32]:
@@ -161,7 +161,7 @@ class Agent(nn.Module):
             nn.ReLU(),
         ]
         self.network = nn.Sequential(*conv_seqs)
-        self.actor = layer_init(nn.Linear(256, envs.single_action_space.n), std=0.01)
+        self.actor = layer_init(nn.Linear(256, num_actions), std=0.01)
         self.critic = layer_init(nn.Linear(256, 1), std=1)
 
     def get_value(self, x):
@@ -174,6 +174,10 @@ class Agent(nn.Module):
         if action is None:
             action = probs.sample()
         return action, probs.log_prob(action), probs.entropy(), self.critic(hidden)
+
+    def forward(self, x):
+        hidden = self.network(x.permute((0, 3, 1, 2)) / 255.0)  # "bhwc" -> "bchw"
+        return self.actor(hidden)
 
 
 if __name__ == "__main__":
@@ -211,7 +215,10 @@ if __name__ == "__main__":
     )
     assert isinstance(envs.single_action_space, gym.spaces.Discrete), "only discrete action space is supported"
 
-    agent = Agent(envs).to(device)
+    observation_space = envs.single_observation_space
+    action_space = envs.single_action_space
+
+    agent = Agent(observation_space.shape, action_space.n).to(device)
     optimizer = optim.Adam(agent.parameters(), lr=args.learning_rate, eps=1e-5)
 
     # ALGO Logic: Storage setup

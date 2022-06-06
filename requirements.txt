@@ -5,3 +5,10 @@ numba==0.55.2
 pyglet==1.5.26
 tensorboard==2.9.0
 wandb==0.12.17
+
+# stuff for building
+onnx==1.11.0
+onnx_tf==1.10.0
+tensorflow==2.9.1
+tensorflow_probability==0.16.0
+tensorflowjs==3.18.0
