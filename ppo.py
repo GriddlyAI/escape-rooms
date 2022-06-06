@@ -176,7 +176,7 @@ class ConvSequence(nn.Module):
 class Agent(nn.Module):
     def __init__(self, observation_shape, num_actions):
         super().__init__()
-        h, w, c = observation_shape
+        c, w, h = observation_shape
         shape = (c, h, w)
         conv_seqs = []
         for out_channels in [16, 32, 32]:
@@ -193,19 +193,19 @@ class Agent(nn.Module):
         ]
         self.network = nn.Sequential(*conv_seqs)
         self.actor = layer_init(
-            nn.Linear(256, envs.single_action_space.n), std=0.01
+            nn.Linear(256, num_actions), std=0.01
         )
         self.critic = layer_init(nn.Linear(256, 1), std=1)
 
     def get_value(self, x):
         return self.critic(
-            self.network(x.permute((0, 3, 1, 2)) / 255.0)
-        )  # "bhwc" -> "bchw"
+            self.network(x.permute((0, 1, 3, 2)) / 255.0)
+        )  # "bcwh" -> "bchw"
 
     def get_action_and_value(self, x, action=None):
         hidden = self.network(
-            x.permute((0, 3, 1, 2)) / 255.0
-        )  # "bhwc" -> "bchw"
+            x.permute((0, 1, 3, 2)) / 255.0
+        )  # "bcwh" -> "bchw"
         logits = self.actor(hidden)
         probs = Categorical(logits=logits)
         if action is None:
@@ -218,7 +218,7 @@ class Agent(nn.Module):
         )
 
     def forward(self, x):
-        hidden = self.network(x.permute((0, 3, 1, 2)) / 255.0)  # "bhwc" -> "bchw"
+        hidden = self.network(x.permute((0, 1, 3, 2)) / 255.0)  # "bcwh" -> "bchw"
         return self.actor(hidden)
 
 
