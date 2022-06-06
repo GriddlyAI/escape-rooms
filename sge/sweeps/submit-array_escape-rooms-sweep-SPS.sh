@@ -11,6 +11,7 @@
 #$ -o logs/
 #$ -e logs/
 
+wandb_entity_values=( chrisbam4d )
 exp_name_values=( escape-rooms-sweep-SPS )
 track_values=( True )
 cuda_values=( True )
@@ -21,6 +22,8 @@ learning_rate_values=( 0.05 )
 ent_coef_values=( 0.1 )
 data_dir_values=( /data/scratch/acw434/escape-rooms-sweep-SPS )
 trial=${SGE_TASK_ID}
+wandb_entity="${wandb_entity_values[$(( trial % ${#wandb_entity_values[@]} ))]}"
+trial=$(( trial / ${#wandb_entity_values[@]} ))
 exp_name="${exp_name_values[$(( trial % ${#exp_name_values[@]} ))]}"
 trial=$(( trial / ${#exp_name_values[@]} ))
 track="${track_values[$(( trial % ${#track_values[@]} ))]}"
@@ -49,4 +52,4 @@ export PYTHONUNBUFFERED=1
 cd ~/escape-rooms
 poetry shell
 
-python ~/escape-rooms/ppo.py  --exp-name="${exp_name}" --track="${track}" --cuda="${cuda}" --total-timesteps="${total_timesteps}" --num-envs="${num_envs}" --num-steps="${num_steps}" --learning-rate="${learning_rate}" --ent-coef="${ent_coef}" --data-dir="${data_dir}"
+python ~/escape-rooms/ppo.py  --wandb-entity="${wandb_entity}" --exp-name="${exp_name}" --track="${track}" --cuda="${cuda}" --total-timesteps="${total_timesteps}" --num-envs="${num_envs}" --num-steps="${num_steps}" --learning-rate="${learning_rate}" --ent-coef="${ent_coef}" --data-dir="${data_dir}"

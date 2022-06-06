@@ -17,6 +17,7 @@ if __name__ == '__main__':
             'sge_entry_point': '~/escape-rooms/ppo.py'
         },
         {
+            'wandb-entity': ['chrisbam4d'],
             'exp-name': [f'{job_name}'],
             'track': ['True'],
             'cuda': ['True'],
