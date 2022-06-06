@@ -40,7 +40,7 @@ def parse_args():
         help="if toggled, this experiment will be tracked with Weights and Biases")
     parser.add_argument("--wandb-project-name", type=str, default="EscapeRoom",
         help="the wandb's project name")
-    parser.add_argument("--wandb-entity", type=str, default="griddlyjs",
+    parser.add_argument("--wandb-entity", type=str, default="ued",
         help="the entity (team) of wandb's project")
     parser.add_argument("--wandb-group", type=str, default="Default",
         help="the experiment group name in wandb")
@@ -100,11 +100,18 @@ def parse_args():
     return args
 
 
-def make_env(seed, idx, capture_video, run_name):
+def make_env(
+    seed,
+    idx,
+    capture_video,
+    run_name,
+    level_generator_cls=CrafterLevelGenerator,
+    max_seed=100000000,
+):
     def thunk():
         # env = EscapeRoomWrapper(level_generator_cls=RotateTranslateGenerator)
-        env = EscapeRoomWrapper(level_generator_cls=CrafterLevelGenerator)
-        env = UniformSeedSettingWrapper(env)
+        env = EscapeRoomWrapper(level_generator_cls=level_generator_cls)
+        env = UniformSeedSettingWrapper(env, max_seed=max_seed)
         env = gym.wrappers.RecordEpisodeStatistics(env)
         if capture_video:
             if idx == 0:
