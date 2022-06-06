@@ -49,9 +49,7 @@ conda activate escape
 
 export PYTHONUNBUFFERED=1
 
-# Set up poetry
 cd {sge_root_directory}
-poetry shell
 
 python {sge_entry_point} {script_args}
 
