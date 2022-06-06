@@ -49,6 +49,8 @@ def parse_args():
         help="weather to capture videos of the agent performances (check out `videos` folder)")
     parser.add_argument("--checkpoint-interval", type=int, default="500")
     parser.add_argument("--checkpoint-path", type=str, default="/private/home/samvelyan/grafter")
+    parser.add_argument('--data-dir', type=str, default='.',
+                        help='Directory to save output from training and logging')
 
     # Algorithm specific arguments
     parser.add_argument("--total-timesteps", type=int, default=50000000,
