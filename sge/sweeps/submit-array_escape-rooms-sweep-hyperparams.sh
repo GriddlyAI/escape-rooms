@@ -2,7 +2,7 @@
 #$ -cwd
 #$ -pe smp 8
 #$ -l h_vmem=11G
-#$ -N escape-rooms-sweep-SPS
+#$ -N escape-rooms-sweep-hyperparams
 #$ -l gpu=1
 #$ -l gpu_type=ampere
 #$ -l cluster=andrena
@@ -12,7 +12,7 @@
 #$ -e logs/
 
 wandb_entity_values=( chrisbam4d )
-exp_name_values=( escape-rooms-sweep-SPS )
+exp_name_values=( escape-rooms-sweep-hyperparams )
 track_values=( True )
 cuda_values=( True )
 total_timesteps_values=( 1000000 )
@@ -20,7 +20,7 @@ num_envs_values=( 64 )
 num_steps_values=( 512 )
 learning_rate_values=( 0.05 0.01 0.005 0.001 )
 ent_coef_values=( 0.2 0.1 0.05 0.01 )
-data_dir_values=( /data/scratch/acw434/escape-rooms-sweep-SPS )
+data_dir_values=( /data/scratch/acw434/escape-rooms-sweep-hyperparams )
 trial=${SGE_TASK_ID}
 wandb_entity="${wandb_entity_values[$(( trial % ${#wandb_entity_values[@]} ))]}"
 trial=$(( trial / ${#wandb_entity_values[@]} ))
