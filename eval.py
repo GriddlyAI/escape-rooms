@@ -147,6 +147,7 @@ if __name__ == "__main__":
 
     xs = [x for x in range(500, 6001, 500)]
     ys = []
+    achievements = []
     cp_tars = [f"checkpoint_{x}.tar" for x in xs]
 
     for x, cp_tar in zip(xs, cp_tars):
@@ -172,6 +173,7 @@ if __name__ == "__main__":
         agent.load_state_dict(checkpoint["model_state_dict"])
 
         returns = []
+        ach_eat_plants = []
         checkpoint_steps = 0
         global_step = 0
         episodes = 0
@@ -203,15 +205,18 @@ if __name__ == "__main__":
                         #     f"global_step={global_step}, episodic_return={item['episode']['r']}"
                         # )
                         returns.append(item["episode"]["r"])
+                        ach_eat_plants.append(item["ach_eat_plant"])
                         episodes += 1
 
         print(
-            f"Checkpoint {x}: Mean return = {np.mean(returns)}, steps - {global_step}, episodes = {episodes}"
+            f"Checkpoint {x}: Mean return = {np.mean(returns)}, eaten = {np.mean(ach_eat_plants)}, steps - {global_step}, episodes = {episodes}"
         )
         ys.append(np.mean(returns))
+        achievements.append(np.mean(np.mean(ach_eat_plants)))
 
+    os.makedirs(os.path.join("eval_results", args.levels), exist_ok=True)
     output_file_path = os.path.join(
         "eval_results", args.levels, run_name + ".pickle"
     )
     with open(output_file_path, "wb") as output_file:
-        cPickle.dump(ys, output_file)
+        cPickle.dump((ys, achievements), output_file)

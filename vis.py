@@ -5,14 +5,26 @@ import glob
 import matplotlib as mlp
 import matplotlib.pyplot as plt
 import seaborn as sns
+import argparse
 
 sns_colors = sns.color_palette("tab10")
 
 
 import _pickle as cPickle
 
+
+def parse_args():
+    # fmt: off
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--metric", type=str, default="Return", choices=["Return", "Achievement"])
+
+    args = parser.parse_args()
+    # fmt: on
+    return args
+
+
 if __name__ == "__main__":
-    calculate_twice = True
+    args = parse_args()
     result_dir = "eval_results"
 
     xs = [i for i in range(500, 6000 + 1, 500)]
@@ -30,8 +42,12 @@ if __name__ == "__main__":
             full_path = os.path.join(path_human, file)
 
             with open(full_path, "rb") as input_file:
-                e = cPickle.load(input_file)
-            returns.append(e)
+                rets, achievements = cPickle.load(input_file)
+
+            if args.metric == "Return":
+                returns.append(rets)
+            else:
+                returns.append(achievements)
 
     mean_returns_human = []
     std_returns_human_h = []
@@ -51,9 +67,13 @@ if __name__ == "__main__":
             full_path = os.path.join(path_generator, file)
 
             with open(full_path, "rb") as input_file:
+                rets, achievements = cPickle.load(input_file)
                 e = cPickle.load(input_file)
 
-            returns.append(e)
+            if args.metric == "Return":
+                returns.append(rets)
+            else:
+                returns.append(achievements)
 
     mean_returns_generator = []
     std_returns_generator_h = []
@@ -105,7 +125,7 @@ if __name__ == "__main__":
     ax.set_xlabel(
         "# Gradient Updates", fontsize=16
     )  # Add an x-label to the axes.
-    ax.set_ylabel("Return", fontsize=16)  # Add a y-label to the axes.
+    ax.set_ylabel(args.metric, fontsize=16)  # Add a y-label to the axes.
     # plt.xlabel('xlabel', f)
     filename = os.path.join(f"eval.pdf")
     plt.savefig(filename, bbox_inches="tight")
