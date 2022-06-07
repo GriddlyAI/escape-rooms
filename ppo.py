@@ -351,6 +351,11 @@ if __name__ == "__main__":
                         item["episode"]["l"],
                         global_step,
                     )
+                    writer.add_scalar(
+                        "charts/escape",
+                        item["ach_eat_plant"],
+                        global_step,
+                    )
                     break
 
         # bootstrap value if not done
