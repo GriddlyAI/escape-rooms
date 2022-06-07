@@ -127,6 +127,6 @@ if __name__ == "__main__":
     )  # Add an x-label to the axes.
     ax.set_ylabel(args.metric, fontsize=16)  # Add a y-label to the axes.
     # plt.xlabel('xlabel', f)
-    filename = os.path.join(f"eval.pdf")
+    filename = os.path.join(f"eval_{args.metric}.pdf")
     plt.savefig(filename, bbox_inches="tight")
     print(f"Saving round robin plot at {filename}")
