@@ -172,7 +172,7 @@ class ConvSequence(nn.Module):
         x = nn.functional.max_pool2d(x, kernel_size=3, stride=2, padding=1)
         x = self.res_block0(x)
         x = self.res_block1(x)
-        #assert x.shape[1:] == self.get_output_shape()
+        # assert x.shape[1:] == self.get_output_shape()
         return x
 
     def get_output_shape(self):
@@ -199,9 +199,7 @@ class Agent(nn.Module):
             nn.ReLU(),
         ]
         self.network = nn.Sequential(*conv_seqs)
-        self.actor = layer_init(
-            nn.Linear(256, num_actions), std=0.01
-        )
+        self.actor = layer_init(nn.Linear(256, num_actions), std=0.01)
         self.critic = layer_init(nn.Linear(256, 1), std=1)
 
     def get_value(self, x):
@@ -225,13 +223,15 @@ class Agent(nn.Module):
         )
 
     def forward(self, x):
-        hidden = self.network(x.permute((0, 1, 3, 2)) / 255.0)  # "bcwh" -> "bchw"
+        hidden = self.network(
+            x.permute((0, 1, 3, 2)) / 255.0
+        )  # "bcwh" -> "bchw"
         return self.actor(hidden)
 
 
 if __name__ == "__main__":
     args = parse_args()
-    run_name = f"Grafter_{args.width}x{args.height}__{args.exp_name}__{args.seed}__{int(time.time())}"
+    run_name = f"Grafter_{args.width}x{args.height}__{args.wandb_group}__{args.exp_name}__{args.seed}__{int(time.time())}"
     if args.track:
         import wandb
 
