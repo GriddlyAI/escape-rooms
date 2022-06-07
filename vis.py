@@ -13,7 +13,7 @@ import _pickle as cPickle
 
 if __name__ == "__main__":
     calculate_twice = True
-    result_dir = "eval_results"
+    result_dir = "eval_results_64"
 
     xs = [i for i in range(500, 6000 + 1, 500)]
     model_tar_names = [f"checkpoint_{i}" for i in xs]

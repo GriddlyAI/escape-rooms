@@ -35,11 +35,11 @@ def parse_args():
         help="seed of the experiment")
     parser.add_argument("--cuda", type=lambda x: bool(strtobool(x)), default=True, nargs="?", const=True,
         help="if toggled, cuda will be enabled by default")
-    parser.add_argument("--checkpoint-dir", type=str, default="results/Grafter_30x30__Grafter-initial__1__1654100111")
+    parser.add_argument("--checkpoint-dir", type=str, default="/private/home/samvelyan/grafter/Grafter_30x30__Grafter-Mon-1e-4-256-4-False__Grafter-Mon__1__1654534045")
     parser.add_argument("--model-tar", type=str, default="checkpoint_9000.tar")
     parser.add_argument("--levels", type=str, default="generator", choices=['generator', 'human'])
     parser.add_argument("--num-steps", type=int, default=256)
-    parser.add_argument("--num-episodes", type=int, default=32)
+    parser.add_argument("--num-episodes", type=int, default=128)
     parser.add_argument("--num-envs", type=int, default=32,
         help="the number of parallel game environments")
     parser.add_argument("--capture-video", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
@@ -63,6 +63,7 @@ def parse_args():
 if __name__ == "__main__":
     args = parse_args()
     run_name = args.checkpoint_dir.split("/")[-1]
+    print(run_name)
 
     # TRY NOT TO MODIFY: seeding
     random.seed(args.seed)
@@ -168,6 +169,8 @@ if __name__ == "__main__":
         )
         ys.append(np.mean(returns))
 
-    output_file = os.path.join("eval_results", args.levels, run_name)
-    with open(r"someobject.pickle", "wb") as output_file:
+    output_file_path = os.path.join(
+        "eval_results", args.levels, run_name + ".pickle"
+    )
+    with open(output_file_path, "wb") as output_file:
         cPickle.dump(ys, output_file)
