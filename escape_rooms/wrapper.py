@@ -76,6 +76,7 @@ class EscapeRoomWrapper(gym.Wrapper):
     def reset(self, seed=100):
         level_string = self._level_generator.generate(seed)
         obs = self.env.reset(level_string=level_string)
+        print(seed)
         return obs
 
     def render(self, mode="human", observer=0):

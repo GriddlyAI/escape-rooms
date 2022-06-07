@@ -188,6 +188,9 @@ class Agent(nn.Module):
         super().__init__()
         c, w, h = observation_shape
         shape = (c, h, w)
+        assert c == 51
+        assert h == 7
+        assert w == 9
         conv_seqs = []
         for out_channels in [16, 32, 32]:
             conv_seq = ConvSequence(shape, out_channels)

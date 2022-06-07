@@ -169,7 +169,7 @@ if __name__ == "__main__":
         next_done = torch.zeros(args.num_envs).to(device)
 
         checkpoint_path = os.path.join(args.checkpoint_dir, cp_tar)
-        checkpoint = torch.load(checkpoint_path)
+        checkpoint = torch.load(checkpoint_path, map_location="cpu")
         agent.load_state_dict(checkpoint["model_state_dict"])
 
         returns = []

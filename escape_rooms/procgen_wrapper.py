@@ -25,4 +25,5 @@ class SequentialSeedSettingWrapper(gym.Wrapper):
         # reset state counter when env resets
         rnd_seed = self.current_seed
         self.current_seed = (self.current_seed + 1) % self.max_seed
+        print(rnd_seed)
         return self.env.reset(rnd_seed)
