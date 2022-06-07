@@ -52,13 +52,17 @@ if __name__ == "__main__":
     mean_returns_human = []
     std_returns_human_h = []
     std_returns_human_l = []
+    stds = []
     for i in range(len(xs)):
         mean_returns_human.append(np.mean([ret[i] for ret in returns]))
         std = np.std([ret[i] for ret in returns])
+        stds.append(std)
         std_returns_human_h.append(mean_returns_human[i] + std)
         std_returns_human_l.append(mean_returns_human[i] - std)
 
-    print(mean_returns_human)
+    print(
+        f"Mean {args.metric} human data = {mean_returns_human}, stds = {stds}"
+    )
 
     path_generator = os.path.join(result_dir, "generator")
     returns = []
@@ -78,13 +82,17 @@ if __name__ == "__main__":
     mean_returns_generator = []
     std_returns_generator_h = []
     std_returns_generator_l = []
+    stds = []
     for i in range(len(xs)):
         mean_returns_generator.append(np.mean([ret[i] for ret in returns]))
         std = np.std([ret[i] for ret in returns])
+        stds.append(std)
         std_returns_generator_h.append(mean_returns_generator[i] + std)
         std_returns_generator_l.append(mean_returns_generator[i] - std)
 
-    print(mean_returns_generator)
+    print(
+        f"Mean {args.metric} generator data = {mean_returns_generator}, stds = {stds}"
+    )
 
     fig, ax = plt.subplots()  # Create a figure and an axes.
     # ax.set_title(
@@ -127,6 +135,6 @@ if __name__ == "__main__":
     )  # Add an x-label to the axes.
     ax.set_ylabel(args.metric, fontsize=16)  # Add a y-label to the axes.
     # plt.xlabel('xlabel', f)
-    filename = os.path.join(f"eval.pdf")
+    filename = os.path.join(f"eval_{args.metric}.pdf")
     plt.savefig(filename, bbox_inches="tight")
     print(f"Saving round robin plot at {filename}")
