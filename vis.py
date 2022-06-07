@@ -52,13 +52,14 @@ if __name__ == "__main__":
     mean_returns_human = []
     std_returns_human_h = []
     std_returns_human_l = []
+    std = 0
     for i in range(len(xs)):
         mean_returns_human.append(np.mean([ret[i] for ret in returns]))
         std = np.std([ret[i] for ret in returns])
         std_returns_human_h.append(mean_returns_human[i] + std)
         std_returns_human_l.append(mean_returns_human[i] - std)
 
-    print(mean_returns_human)
+    print(f"Mean {args.metric} human data = {mean_returns_human}, std = {std}")
 
     path_generator = os.path.join(result_dir, "generator")
     returns = []
@@ -84,7 +85,9 @@ if __name__ == "__main__":
         std_returns_generator_h.append(mean_returns_generator[i] + std)
         std_returns_generator_l.append(mean_returns_generator[i] - std)
 
-    print(mean_returns_generator)
+    print(
+        f"Mean {args.metric} generator data = {mean_returns_generator}, std = {std}"
+    )
 
     fig, ax = plt.subplots()  # Create a figure and an axes.
     # ax.set_title(
