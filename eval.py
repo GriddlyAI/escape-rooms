@@ -21,9 +21,13 @@ from escape_rooms.level_generators.rotate_translate_generator import (
 from escape_rooms.level_generators.crafter_generator import (
     CrafterLevelGenerator,
 )
+from escape_rooms.level_generators.human_generator import HumanDataGenerator
 from escape_rooms.wrapper import EscapeRoomWrapper
-from escape_rooms.procgen_wrapper import UniformSeedSettingWrapper
-from ppo import Agent, make_env
+from escape_rooms.procgen_wrapper import (
+    UniformSeedSettingWrapper,
+    SequentialSeedSettingWrapper,
+)
+from ppo import Agent
 
 import _pickle as cPickle
 
@@ -35,11 +39,11 @@ def parse_args():
         help="seed of the experiment")
     parser.add_argument("--cuda", type=lambda x: bool(strtobool(x)), default=True, nargs="?", const=True,
         help="if toggled, cuda will be enabled by default")
-    parser.add_argument("--checkpoint-dir", type=str, default="results/Grafter_30x30__Grafter-initial__1__1654100111")
+    parser.add_argument("--checkpoint-dir", type=str, default="/private/home/samvelyan/grafter/Grafter_30x30__Grafter-Mon-1e-4-256-4-False__Grafter-Mon__1__1654534045")
     parser.add_argument("--model-tar", type=str, default="checkpoint_9000.tar")
     parser.add_argument("--levels", type=str, default="generator", choices=['generator', 'human'])
     parser.add_argument("--num-steps", type=int, default=256)
-    parser.add_argument("--num-episodes", type=int, default=32)
+    parser.add_argument("--num-episodes", type=int, default=100)
     parser.add_argument("--num-envs", type=int, default=32,
         help="the number of parallel game environments")
     parser.add_argument("--capture-video", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
@@ -60,9 +64,32 @@ def parse_args():
     return args
 
 
+def make_env(
+    seed,
+    idx,
+    capture_video,
+    run_name,
+    level_generator_cls=CrafterLevelGenerator,
+    max_seed=100,
+):
+    def thunk():
+        # env = EscapeRoomWrapper(level_generator_cls=RotateTranslateGenerator)
+        env = EscapeRoomWrapper(level_generator_cls=level_generator_cls)
+        env = SequentialSeedSettingWrapper(env, max_seed=max_seed)
+        env = gym.wrappers.RecordEpisodeStatistics(env)
+        if capture_video:
+            if idx == 0:
+                env = gym.wrappers.RecordVideo(env, f"videos/{run_name}")
+        env.seed(seed)
+        return env
+
+    return thunk
+
+
 if __name__ == "__main__":
     args = parse_args()
     run_name = args.checkpoint_dir.split("/")[-1]
+    print(run_name)
 
     # TRY NOT TO MODIFY: seeding
     random.seed(args.seed)
@@ -74,11 +101,11 @@ if __name__ == "__main__":
         "cuda" if torch.cuda.is_available() and args.cuda else "cpu"
     )
 
-    max_seed = 800
+    max_seed = 99
     if args.levels == "generator":
         level_generator_cls = CrafterLevelGenerator
     else:
-        level_generator_cls = RotateTranslateGenerator
+        level_generator_cls = HumanDataGenerator
 
     # env setup
     envs = gym.vector.SyncVectorEnv(
@@ -98,9 +125,11 @@ if __name__ == "__main__":
         envs.single_action_space, gym.spaces.Discrete
     ), "only discrete action space is supported"
 
-    # Load checkpointed agent
-    agent = Agent(envs).to(device)
+    observation_space = envs.single_observation_space
+    action_space = envs.single_action_space
 
+    # Load checkpointed agent
+    agent = Agent(observation_space.shape, action_space.n).to(device)
     # ALGO Logic: Storage setup
     obs = torch.zeros(
         (args.num_steps, args.num_envs) + envs.single_observation_space.shape
@@ -115,19 +144,36 @@ if __name__ == "__main__":
 
     # TRY NOT TO MODIFY: start the game
     start_time = time.time()
-    next_obs = torch.Tensor(envs.reset()).to(device)
-    next_done = torch.zeros(args.num_envs).to(device)
 
     xs = [x for x in range(500, 6001, 500)]
     ys = []
+    achievements = []
     cp_tars = [f"checkpoint_{x}.tar" for x in xs]
 
     for x, cp_tar in zip(xs, cp_tars):
+
+        envs = gym.vector.SyncVectorEnv(
+            [
+                make_env(
+                    args.seed + i,
+                    i,
+                    args.capture_video,
+                    run_name,
+                    level_generator_cls=level_generator_cls,
+                    max_seed=max_seed,
+                )
+                for i in range(args.num_envs)
+            ]
+        )
+        next_obs = torch.Tensor(envs.reset()).to(device)
+        next_done = torch.zeros(args.num_envs).to(device)
+
         checkpoint_path = os.path.join(args.checkpoint_dir, cp_tar)
         checkpoint = torch.load(checkpoint_path)
         agent.load_state_dict(checkpoint["model_state_dict"])
 
         returns = []
+        ach_eat_plants = []
         checkpoint_steps = 0
         global_step = 0
         episodes = 0
@@ -159,13 +205,18 @@ if __name__ == "__main__":
                         #     f"global_step={global_step}, episodic_return={item['episode']['r']}"
                         # )
                         returns.append(item["episode"]["r"])
+                        ach_eat_plants.append(item["ach_eat_plant"])
                         episodes += 1
 
         print(
-            f"Checkpoint {x}: Mean return = {np.mean(returns)}, steps - {global_step}, episodes = {episodes}"
+            f"Checkpoint {x}: Mean return = {np.mean(returns)}, eaten = {np.mean(ach_eat_plants)}, steps - {global_step}, episodes = {episodes}"
         )
         ys.append(np.mean(returns))
+        achievements.append(np.mean(np.mean(ach_eat_plants)))
 
-    output_file = os.path.join("eval_results", args.levels, run_name)
-    with open(r"someobject.pickle", "wb") as output_file:
-        cPickle.dump(ys, output_file)
+    os.makedirs(os.path.join("eval_results", args.levels), exist_ok=True)
+    output_file_path = os.path.join(
+        "eval_results", args.levels, run_name + ".pickle"
+    )
+    with open(output_file_path, "wb") as output_file:
+        cPickle.dump((ys, achievements), output_file)

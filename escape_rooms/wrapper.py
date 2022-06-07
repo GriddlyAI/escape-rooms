@@ -63,12 +63,15 @@ class EscapeRoomWrapper(gym.Wrapper):
 
         if self.env._player_observer_type[0] == gd.ObserverType.VECTOR:
             # Sellotape the global variable we care about to the obs
-            obs, reward, info, done = self.env.step(g_action)
+            obs, reward, done, info = self.env.step(g_action)
             all_obs = obs
         else:
-            all_obs, reward, info, done = self.env.step(g_action)
+            all_obs, reward, done, info = self.env.step(g_action)
 
-        return all_obs, reward, info, done
+        if(done):
+            info['ach_eat_plant'] = self.env.game.get_global_variable(['ach_eat_plant'])['ach_eat_plant'][1]
+
+        return all_obs, reward, done, info
 
     def reset(self, seed=100):
         level_string = self._level_generator.generate(seed)
