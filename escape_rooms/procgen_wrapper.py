@@ -17,11 +17,12 @@ class SeedListWrapper(gym.Wrapper):
     def __init__(self, env, seeds):
         # intialize state counter
         self.seeds = seeds.copy()
+        self.completed_seeds = False
         super().__init__(env)
 
 
     def step(self, action):
-        if len(self.seeds) == 0:
+        if self.completed_seeds:
             obs, reward, done, info = self.env.step(0)
             info['ignore'] = True
             return obs, reward, done, info
@@ -31,6 +32,7 @@ class SeedListWrapper(gym.Wrapper):
 
     def reset(self):
         if len(self.seeds) == 0:
+            self.completed_seeds = True
             seed = 0
         else:
             seed = self.seeds.pop()

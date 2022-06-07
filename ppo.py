@@ -48,7 +48,7 @@ def parse_args():
     parser.add_argument("--capture-video", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
         help="weather to capture videos of the agent performances (check out `videos` folder)")
     parser.add_argument("--checkpoint-interval", type=int, default="500")
-    parser.add_argument("--checkpoint-path", type=str, default="/data/scratch/acw434/escape-rooms-sweep-hyperparams/checkpoints")
+    parser.add_argument("--checkpoint-path", type=str, default="checkpoints")
     parser.add_argument('--data-dir', type=str, default='.',
                         help='Directory to save output from training and logging')
 
