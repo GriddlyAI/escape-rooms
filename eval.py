@@ -152,7 +152,7 @@ if __name__ == "__main__":
     # TRY NOT TO MODIFY: start the game
     start_time = time.time()
 
-    xs = [x for x in range(500, 6001, 500)]
+    xs = [x for x in range(10, 21, 10)]
     ys = []
     achievements = []
     cp_tars = [f"checkpoint_{x}.tar" for x in xs]
