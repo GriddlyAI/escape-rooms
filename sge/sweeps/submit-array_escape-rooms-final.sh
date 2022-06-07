@@ -23,6 +23,7 @@ ent_coef_values=( 0.05 )
 seed_values=( 0 1 2 3 4 5 6 7 8 9 )
 data_dir_values=( /data/scratch/acw434/escape-rooms-final )
 checkpoint_path_values=( /data/scratch/acw434/escape-rooms-final/checkpoints )
+checkpoint_interval_values=( 30 )
 trial=${SGE_TASK_ID}
 wandb_entity="${wandb_entity_values[$(( trial % ${#wandb_entity_values[@]} ))]}"
 trial=$(( trial / ${#wandb_entity_values[@]} ))
@@ -47,6 +48,8 @@ trial=$(( trial / ${#seed_values[@]} ))
 data_dir="${data_dir_values[$(( trial % ${#data_dir_values[@]} ))]}"
 trial=$(( trial / ${#data_dir_values[@]} ))
 checkpoint_path="${checkpoint_path_values[$(( trial % ${#checkpoint_path_values[@]} ))]}"
+trial=$(( trial / ${#checkpoint_path_values[@]} ))
+checkpoint_interval="${checkpoint_interval_values[$(( trial % ${#checkpoint_interval_values[@]} ))]}"
 
 module purge
 module load cuda anaconda3 vulkan-sdk
@@ -56,4 +59,4 @@ export PYTHONUNBUFFERED=1
 
 cd ~/escape-rooms
 
-python ~/escape-rooms/ppo.py  --wandb-entity="${wandb_entity}" --exp-name="${exp_name}" --track="${track}" --cuda="${cuda}" --total-timesteps="${total_timesteps}" --num-envs="${num_envs}" --num-steps="${num_steps}" --learning-rate="${learning_rate}" --ent-coef="${ent_coef}" --seed="${seed}" --data-dir="${data_dir}" --checkpoint-path="${checkpoint_path}"
+python ~/escape-rooms/ppo.py  --wandb-entity="${wandb_entity}" --exp-name="${exp_name}" --track="${track}" --cuda="${cuda}" --total-timesteps="${total_timesteps}" --num-envs="${num_envs}" --num-steps="${num_steps}" --learning-rate="${learning_rate}" --ent-coef="${ent_coef}" --seed="${seed}" --data-dir="${data_dir}" --checkpoint-path="${checkpoint_path}" --checkpoint-interval="${checkpoint_interval}"
