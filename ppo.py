@@ -48,7 +48,7 @@ def parse_args():
     parser.add_argument("--capture-video", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
         help="weather to capture videos of the agent performances (check out `videos` folder)")
     parser.add_argument("--checkpoint-interval", type=int, default="500")
-    parser.add_argument("--checkpoint-path", type=str, default="/private/home/samvelyan/grafter")
+    parser.add_argument("--checkpoint-path", type=str, default="/data/scratch/acw434/escape-rooms-sweep-hyperparams/checkpoints")
     parser.add_argument('--data-dir', type=str, default='.',
                         help='Directory to save output from training and logging')
 
@@ -188,9 +188,6 @@ class Agent(nn.Module):
         super().__init__()
         c, w, h = observation_shape
         shape = (c, h, w)
-        assert c == 51
-        assert h == 7
-        assert w == 9
         conv_seqs = []
         for out_channels in [16, 32, 32]:
             conv_seq = ConvSequence(shape, out_channels)

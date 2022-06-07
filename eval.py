@@ -25,7 +25,7 @@ from escape_rooms.level_generators.human_generator import HumanDataGenerator
 from escape_rooms.wrapper import EscapeRoomWrapper
 from escape_rooms.procgen_wrapper import (
     UniformSeedSettingWrapper,
-    SequentialSeedSettingWrapper,
+    SequentialSeedSettingWrapper, SeedListWrapper,
 )
 from ppo import Agent
 
@@ -66,16 +66,16 @@ def parse_args():
 
 def make_env(
     seed,
+    seeds,
     idx,
     capture_video,
     run_name,
     level_generator_cls=CrafterLevelGenerator,
-    max_seed=100,
 ):
     def thunk():
         # env = EscapeRoomWrapper(level_generator_cls=RotateTranslateGenerator)
         env = EscapeRoomWrapper(level_generator_cls=level_generator_cls)
-        env = SequentialSeedSettingWrapper(env, max_seed=max_seed)
+        env = SeedListWrapper(env, seeds=seeds)
         env = gym.wrappers.RecordEpisodeStatistics(env)
         if capture_video:
             if idx == 0:
@@ -107,16 +107,23 @@ if __name__ == "__main__":
     else:
         level_generator_cls = HumanDataGenerator
 
+    seed_groups = []
+    for i in range(0, args.num_envs):
+        range_start = int((i * max_seed) / args.num_envs)
+        range_end = int(((i+1) * max_seed) / args.num_envs)
+        seed_groups.append(np.arange(range_start, range_end).tolist())
+
     # env setup
     envs = gym.vector.SyncVectorEnv(
         [
             make_env(
                 args.seed + i,
+                seed_groups[i],
                 i,
                 args.capture_video,
                 run_name,
                 level_generator_cls=level_generator_cls,
-                max_seed=max_seed,
+
             )
             for i in range(args.num_envs)
         ]
@@ -156,11 +163,11 @@ if __name__ == "__main__":
             [
                 make_env(
                     args.seed + i,
+                    seed_groups[i],
                     i,
                     args.capture_video,
                     run_name,
                     level_generator_cls=level_generator_cls,
-                    max_seed=max_seed,
                 )
                 for i in range(args.num_envs)
             ]
@@ -200,13 +207,15 @@ if __name__ == "__main__":
                 ), torch.Tensor(done).to(device)
 
                 for item in info:
+
                     if "episode" in item.keys():
-                        # print(
-                        #     f"global_step={global_step}, episodic_return={item['episode']['r']}"
-                        # )
-                        returns.append(item["episode"]["r"])
-                        ach_eat_plants.append(item["ach_eat_plant"])
-                        episodes += 1
+                        if 'ignore' not in item.keys():
+                            # print(
+                            #     f"global_step={global_step}, episodic_return={item['episode']['r']}"
+                            # )
+                            returns.append(item["episode"]["r"])
+                            ach_eat_plants.append(item["ach_eat_plant"])
+                            episodes += 1
 
         print(
             f"Checkpoint {x}: Mean return = {np.mean(returns)}, eaten = {np.mean(ach_eat_plants)}, steps - {global_step}, episodes = {episodes}"
