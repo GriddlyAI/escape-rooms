@@ -144,8 +144,6 @@ if __name__ == "__main__":
 
     # TRY NOT TO MODIFY: start the game
     start_time = time.time()
-    next_obs = torch.Tensor(envs.reset()).to(device)
-    next_done = torch.zeros(args.num_envs).to(device)
 
     xs = [x for x in range(500, 6001, 500)]
     ys = []
@@ -166,6 +164,8 @@ if __name__ == "__main__":
                 for i in range(args.num_envs)
             ]
         )
+        next_obs = torch.Tensor(envs.reset()).to(device)
+        next_done = torch.zeros(args.num_envs).to(device)
 
         checkpoint_path = os.path.join(args.checkpoint_dir, cp_tar)
         checkpoint = torch.load(checkpoint_path)
