@@ -21,9 +21,13 @@ from escape_rooms.level_generators.rotate_translate_generator import (
 from escape_rooms.level_generators.crafter_generator import (
     CrafterLevelGenerator,
 )
+from escape_rooms.level_generators.human_generator import HumanDataGenerator
 from escape_rooms.wrapper import EscapeRoomWrapper
-from escape_rooms.procgen_wrapper import UniformSeedSettingWrapper
-from ppo import Agent, make_env
+from escape_rooms.procgen_wrapper import (
+    UniformSeedSettingWrapper,
+    SequentialSeedSettingWrapper,
+)
+from ppo import Agent
 
 import _pickle as cPickle
 
@@ -39,7 +43,7 @@ def parse_args():
     parser.add_argument("--model-tar", type=str, default="checkpoint_9000.tar")
     parser.add_argument("--levels", type=str, default="generator", choices=['generator', 'human'])
     parser.add_argument("--num-steps", type=int, default=256)
-    parser.add_argument("--num-episodes", type=int, default=128)
+    parser.add_argument("--num-episodes", type=int, default=100)
     parser.add_argument("--num-envs", type=int, default=32,
         help="the number of parallel game environments")
     parser.add_argument("--capture-video", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
@@ -60,6 +64,28 @@ def parse_args():
     return args
 
 
+def make_env(
+    seed,
+    idx,
+    capture_video,
+    run_name,
+    level_generator_cls=CrafterLevelGenerator,
+    max_seed=100,
+):
+    def thunk():
+        # env = EscapeRoomWrapper(level_generator_cls=RotateTranslateGenerator)
+        env = EscapeRoomWrapper(level_generator_cls=level_generator_cls)
+        env = SequentialSeedSettingWrapper(env, max_seed=max_seed)
+        env = gym.wrappers.RecordEpisodeStatistics(env)
+        if capture_video:
+            if idx == 0:
+                env = gym.wrappers.RecordVideo(env, f"videos/{run_name}")
+        env.seed(seed)
+        return env
+
+    return thunk
+
+
 if __name__ == "__main__":
     args = parse_args()
     run_name = args.checkpoint_dir.split("/")[-1]
@@ -75,11 +101,11 @@ if __name__ == "__main__":
         "cuda" if torch.cuda.is_available() and args.cuda else "cpu"
     )
 
-    max_seed = 800
+    max_seed = 99
     if args.levels == "generator":
         level_generator_cls = CrafterLevelGenerator
     else:
-        level_generator_cls = RotateTranslateGenerator
+        level_generator_cls = HumanDataGenerator
 
     # env setup
     envs = gym.vector.SyncVectorEnv(
@@ -126,6 +152,21 @@ if __name__ == "__main__":
     cp_tars = [f"checkpoint_{x}.tar" for x in xs]
 
     for x, cp_tar in zip(xs, cp_tars):
+
+        envs = gym.vector.SyncVectorEnv(
+            [
+                make_env(
+                    args.seed + i,
+                    i,
+                    args.capture_video,
+                    run_name,
+                    level_generator_cls=level_generator_cls,
+                    max_seed=max_seed,
+                )
+                for i in range(args.num_envs)
+            ]
+        )
+
         checkpoint_path = os.path.join(args.checkpoint_dir, cp_tar)
         checkpoint = torch.load(checkpoint_path)
         agent.load_state_dict(checkpoint["model_state_dict"])
