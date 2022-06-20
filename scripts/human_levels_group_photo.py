@@ -11,41 +11,42 @@ from escape_rooms.level_generators.human_generator import HumanDataGenerator
 
 
 class SquarePad:
-	def __call__(self, image):
-		image_size = image.size()[1:]
-		max_wh = max(image_size)
-		p_top, p_left = [(max_wh - s) // 2 for s in image_size]
-		p_bottom, p_right = [max_wh - (s+pad) for s, pad in zip(image_size, [p_top, p_left])]
-		padding = (p_left, p_top, p_right, p_bottom)
-		return F.pad(image, padding, 0, 'constant')
+    def __call__(self, image):
+        image_size = image.size()[1:]
+        max_wh = max(image_size)
+        p_top, p_left = [(max_wh - s) // 2 for s in image_size]
+        p_bottom, p_right = [max_wh - (s + pad) for s, pad in zip(image_size, [p_top, p_left])]
+        padding = (p_left, p_top, p_right, p_bottom)
+        return F.pad(image, padding, 0, 'constant')
+
 
 if __name__ == '__main__':
-	# env = EscapeRoomWrapper(30, 30)
-	env = EscapeRoomWrapper(player_observer_type='GlobalSprite2D', level_generator_cls=HumanDataGenerator)
-	# env = PlayWrapper(env, seed=100)
+    # env = EscapeRoomWrapper(30, 30)
+    env = EscapeRoomWrapper(player_observer_type='GlobalSprite2D', level_generator_cls=HumanDataGenerator)
+    # env = PlayWrapper(env, seed=100)
 
-	save_dir = 'figures/'
-	save_dir = os.path.expandvars(os.path.expanduser(save_dir))
-	if not os.path.exists(save_dir):
-		os.makedirs(save_dir, exist_ok=True)
+    save_dir = 'figures/'
+    save_dir = os.path.expandvars(os.path.expanduser(save_dir))
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir, exist_ok=True)
 
-	seeds = list(range(0,101))
-	images = []
-	for s in seeds:
-		if s == 1:
-			continue
-		images.append(np.copy(env.reset(seed=s)))
+    seeds = list(range(0, 101))
+    images = []
+    for s in seeds:
+        if s == 1:
+            continue
+        images.append(np.copy(env.reset(seed=s)))
 
-	sqpad = SquarePad()
-	tensor_images = [sqpad(torch.tensor(img, dtype=torch.float32).permute(0,2,1))/255 for img in images]
+    sqpad = SquarePad()
+    tensor_images = [sqpad(torch.tensor(img, dtype=torch.float32).permute(0, 2, 1)) / 255 for img in images]
 
-	transform = transforms.Compose([
-		transforms.ToPILImage(),
-		transforms.Resize(size=(100, 100)),
-		transforms.ToTensor()
-	])
+    transform = transforms.Compose([
+        transforms.ToPILImage(),
+        transforms.Resize(size=(100, 100)),
+        transforms.ToTensor()
+    ])
 
-	downscaled_imgs = [transform(t) for t in tensor_images]
+    downscaled_imgs = [transform(t) for t in tensor_images]
 
-	all_tracks = utils.make_grid(downscaled_imgs, nrow=10)
-	utils.save_image(all_tracks, os.path.join(save_dir, 'escape_rooms.png'))
+    all_tracks = utils.make_grid(downscaled_imgs, nrow=10)
+    utils.save_image(all_tracks, os.path.join(save_dir, 'escape_rooms.png'))

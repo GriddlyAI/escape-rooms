@@ -14,12 +14,7 @@ KEYWORD_TO_KEY = {
     (ord('f'),): 8,
     (ord('c'),): 9,
     (ord('t'),): 10,
-    (ord('g'),): 11,
-    (ord('v'),): 12,
-    (ord('y'),): 13,
-    (ord('h'),): 14,
-    (ord('b'),): 15,
-    (ord('u'),): 16,
+    (ord('g'),): 11
 }
 from pygame.locals import VIDEORESIZE
 
@@ -102,8 +97,7 @@ class PlayWrapper(gym.Wrapper):
                 }
             If None, default key_to_action mapping for that env is used, if provided.
         """
-        self.env.reset()
-        self.env.seed(self._seed)
+        self.env.reset(seed=self._seed)
         rendered = self.env.render(mode="rgb_array")
 
         if keys_to_action is None:
@@ -133,7 +127,7 @@ class PlayWrapper(gym.Wrapper):
         while running:
             if env_done:
                 env_done = False
-                obs = self.env.reset()
+                obs = self.env.reset(seed=self._seed)
             else:
                 action = keys_to_action.get(tuple(sorted(pressed_keys)), 0)
                 prev_obs = obs
