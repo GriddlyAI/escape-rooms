@@ -150,8 +150,8 @@ class CrafterLevelGenerator(LevelGenerator):
             pass
         elif dist > 3 and material == "G" and uniform() > 0.985:  # cow
             world[x, y] = f"#/{material}"
-        elif dist > 10 and uniform() > 0.993:  # zombie
-            world[x, y] = f"!/{material}"
+        # elif dist > 10 and uniform() > 0.993:  # zombie
+        #     world[x, y] = f"!/{material}"
         elif material == "P" and tunnels[x, y] and uniform() > 0.95:  # skeleton
             world[x, y] = f"@/{material}"
 
