@@ -19,6 +19,7 @@ num_envs_values=( 64 )
 num_steps_values=( 512 )
 learning_rate_values=( 0.005 )
 ent_coef_values=( 0.01 )
+gae_lambda_values=( 0.65 )
 seed_values=( 0 1 2 3 4 5 6 7 8 9 )
 data_dir_values=( /data/scratch/acw434/escape-rooms-final-July )
 checkpoint_path_values=( /data/scratch/acw434/escape-rooms-final-July/checkpoints )
@@ -42,6 +43,8 @@ learning_rate="${learning_rate_values[$(( trial % ${#learning_rate_values[@]} ))
 trial=$(( trial / ${#learning_rate_values[@]} ))
 ent_coef="${ent_coef_values[$(( trial % ${#ent_coef_values[@]} ))]}"
 trial=$(( trial / ${#ent_coef_values[@]} ))
+gae_lambda="${gae_lambda_values[$(( trial % ${#gae_lambda_values[@]} ))]}"
+trial=$(( trial / ${#gae_lambda_values[@]} ))
 seed="${seed_values[$(( trial % ${#seed_values[@]} ))]}"
 trial=$(( trial / ${#seed_values[@]} ))
 data_dir="${data_dir_values[$(( trial % ${#data_dir_values[@]} ))]}"
@@ -58,4 +61,4 @@ export PYTHONUNBUFFERED=1
 
 cd ~/escape-rooms
 
-python ~/escape-rooms/ppo.py  --wandb-entity="${wandb_entity}" --exp-name="${exp_name}" --track="${track}" --cuda="${cuda}" --total-timesteps="${total_timesteps}" --num-envs="${num_envs}" --num-steps="${num_steps}" --learning-rate="${learning_rate}" --ent-coef="${ent_coef}" --seed="${seed}" --data-dir="${data_dir}" --checkpoint-path="${checkpoint_path}" --checkpoint-interval="${checkpoint_interval}"
+python ~/escape-rooms/ppo.py  --wandb-entity="${wandb_entity}" --exp-name="${exp_name}" --track="${track}" --cuda="${cuda}" --total-timesteps="${total_timesteps}" --num-envs="${num_envs}" --num-steps="${num_steps}" --learning-rate="${learning_rate}" --ent-coef="${ent_coef}" --gae-lambda="${gae_lambda}" --seed="${seed}" --data-dir="${data_dir}" --checkpoint-path="${checkpoint_path}" --checkpoint-interval="${checkpoint_interval}"
