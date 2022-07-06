@@ -6,7 +6,7 @@
 #$ -l gpu=1
 #$ -l gpu_type=ampere
 #$ -l h_rt=1:0:0
-#$ -t 1-36
+#$ -t 1-12
 #$ -o logs/
 #$ -e logs/
 
@@ -20,7 +20,6 @@ num_steps_values=( 512 )
 learning_rate_values=( 0.005 0.001 )
 ent_coef_values=( 0.05 0.01 )
 gae_lambda_values=( 0.65 0.8 0.95 )
-gae_values=( 0.65 0.8 0.95 )
 data_dir_values=( /data/scratch/acw434/escape-rooms-sweep-hyperparams-July-gae )
 trial=${SGE_TASK_ID}
 wandb_entity="${wandb_entity_values[$(( trial % ${#wandb_entity_values[@]} ))]}"
@@ -43,8 +42,6 @@ ent_coef="${ent_coef_values[$(( trial % ${#ent_coef_values[@]} ))]}"
 trial=$(( trial / ${#ent_coef_values[@]} ))
 gae_lambda="${gae_lambda_values[$(( trial % ${#gae_lambda_values[@]} ))]}"
 trial=$(( trial / ${#gae_lambda_values[@]} ))
-gae="${gae_values[$(( trial % ${#gae_values[@]} ))]}"
-trial=$(( trial / ${#gae_values[@]} ))
 data_dir="${data_dir_values[$(( trial % ${#data_dir_values[@]} ))]}"
 
 module purge
@@ -55,4 +52,4 @@ export PYTHONUNBUFFERED=1
 
 cd ~/escape-rooms
 
-python ~/escape-rooms/escape_rooms/ppo.py  --wandb-entity="${wandb_entity}" --exp-name="${exp_name}" --track="${track}" --cuda="${cuda}" --total-timesteps="${total_timesteps}" --num-envs="${num_envs}" --num-steps="${num_steps}" --learning-rate="${learning_rate}" --ent-coef="${ent_coef}" --gae-lambda="${gae_lambda}" --gae="${gae}" --data-dir="${data_dir}"
+python ~/escape-rooms/escape_rooms/ppo.py  --wandb-entity="${wandb_entity}" --exp-name="${exp_name}" --track="${track}" --cuda="${cuda}" --total-timesteps="${total_timesteps}" --num-envs="${num_envs}" --num-steps="${num_steps}" --learning-rate="${learning_rate}" --ent-coef="${ent_coef}" --gae-lambda="${gae_lambda}" --data-dir="${data_dir}"

@@ -27,7 +27,6 @@ if __name__ == '__main__':
             'learning-rate': [0.005, 0.001],
             'ent-coef': [0.05, 0.01],
             'gae-lambda': [0.65,0.8,0.95],
-            'gae': [0.65, 0.8, 0.95],
             'data-dir': [f'/data/scratch/acw434/{job_name}']
         })
 
