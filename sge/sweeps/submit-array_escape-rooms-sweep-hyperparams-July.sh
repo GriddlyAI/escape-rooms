@@ -5,7 +5,6 @@
 #$ -N escape-rooms-sweep-hyperparams-July
 #$ -l gpu=1
 #$ -l gpu_type=ampere
-#$ -l cluster=mycluster
 #$ -l h_rt=1:0:0
 #$ -t 1-16
 #$ -o logs/

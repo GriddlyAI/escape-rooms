@@ -14,7 +14,7 @@ DEFAULT_QSUB_FIELDS = {
     'sge_time_m': 0,
     'sge_time_s': 0,
     'sge_job_name': 'myjob',
-    'sge_cluster_name': 'mycluster',
+    #'sge_cluster_name': 'mycluster',
     'sge_entry_point': 'train.py',
     'sge_logdir': 'logs/',
     'sge_gpu_type': 'volta',
@@ -33,7 +33,6 @@ TEMPLATE = '''
 #$ -N {sge_job_name}
 #$ -l gpu={sge_num_gpus}
 #$ -l gpu_type={sge_gpu_type}
-#$ -l cluster={sge_cluster_name}
 #$ -l h_rt={sge_time_h}:{sge_time_m}:{sge_time_s}
 #$ -t 1-{num_jobs}
 #$ -o {sge_logdir}
