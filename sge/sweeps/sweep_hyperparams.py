@@ -2,7 +2,7 @@ from sge.param_sweeper import get_script
 
 if __name__ == '__main__':
 
-    job_name = 'escape-rooms-sweep-hyperparams'
+    job_name = 'escape-rooms-sweep-hyperparams-July'
     script = get_script(
         {
             'sge_time_h': 1,
