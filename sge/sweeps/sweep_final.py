@@ -1,7 +1,7 @@
 from sge.param_sweeper import get_script
 
 if __name__ == '__main__':
-    job_name = 'escape-rooms-final-July'
+    job_name = 'escape-rooms-final-July-100'
     script = get_script(
         {
             'sge_time_h': 1,
@@ -20,7 +20,7 @@ if __name__ == '__main__':
             'exp-name': [f'{job_name}'],
             'track': ['True'],
             'cuda': ['True'],
-            'total-timesteps': [10000000],
+            'total-timesteps': [100000000],
             'num-envs': [64],
             'num-steps': [512],
             'learning-rate': [0.005],
@@ -29,7 +29,7 @@ if __name__ == '__main__':
             'seed': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
             'data-dir': [f'/data/scratch/acw434/{job_name}'],
             'checkpoint-path': [f'/data/scratch/acw434/{job_name}/checkpoints'],
-            'checkpoint-interval': [30]
+            'checkpoint-interval': [200]
         })
 
     with open(f'submit-array_{job_name}.sh', 'w') as f:
