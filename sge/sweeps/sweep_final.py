@@ -4,7 +4,7 @@ if __name__ == '__main__':
     job_name = 'escape-rooms-final-July-100'
     script = get_script(
         {
-            'sge_time_h': 1,
+            'sge_time_h': 10,
             'sge_job_name': f'{job_name}',
             'sge_num_cpus': 8,
             'sge_num_gpus': 1,

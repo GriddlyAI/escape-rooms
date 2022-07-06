@@ -2,10 +2,10 @@ from sge.param_sweeper import get_script
 
 if __name__ == '__main__':
 
-    job_name = 'escape-rooms-sweep-hyperparams-July-gae'
+    job_name = 'escape-rooms-sweep-hyperparams-July-gae-bigger'
     script = get_script(
         {
-            'sge_time_h': 1,
+            'sge_time_h': 2,
             'sge_job_name': f'{job_name}',
             'sge_num_cpus': 8,
             'sge_num_gpus': 1,
@@ -21,12 +21,12 @@ if __name__ == '__main__':
             'exp-name': [f'{job_name}'],
             'track': ['True'],
             'cuda': ['True'],
-            'total-timesteps': [1000000],
+            'total-timesteps': [10000000],
             'num-envs': [64],
             'num-steps': [512],
-            'learning-rate': [0.005, 0.001],
-            'ent-coef': [0.05, 0.01],
-            'gae-lambda': [0.65,0.8,0.95],
+            'learning-rate': [0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001],
+            'ent-coef': [0.2, 0.1, 0.05, 0.01, 0.005, 0.001],
+            'gae-lambda': [0.65, 0.8, 0.95],
             'data-dir': [f'/data/scratch/acw434/{job_name}']
         })
 
