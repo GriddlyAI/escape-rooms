@@ -11,10 +11,10 @@ if __name__ == '__main__':
             'sge_num_gpus': 1,
             'sge_memory': 11,
             'sge_memory_unit': 'G',
-            'sge_cluster_name': 'andrena',
+            #'sge_cluster_name': 'andrena',
             'sge_gpu_type': 'ampere',
             'sge_root_directory': '~/escape-rooms',
-            'sge_entry_point': '~/escape-rooms/ppo.py'
+            'sge_entry_point': '~/escape-rooms/escape-rooms/ppo.py'
         },
         {
             'wandb-entity': ['chrisbam4d'],

@@ -5,7 +5,7 @@
 #$ -N escape-rooms-sweep-hyperparams-July
 #$ -l gpu=1
 #$ -l gpu_type=ampere
-#$ -l cluster=andrena
+#$ -l cluster=mycluster
 #$ -l h_rt=1:0:0
 #$ -t 1-16
 #$ -o logs/
@@ -50,4 +50,4 @@ export PYTHONUNBUFFERED=1
 
 cd ~/escape-rooms
 
-python ~/escape-rooms/ppo.py  --wandb-entity="${wandb_entity}" --exp-name="${exp_name}" --track="${track}" --cuda="${cuda}" --total-timesteps="${total_timesteps}" --num-envs="${num_envs}" --num-steps="${num_steps}" --learning-rate="${learning_rate}" --ent-coef="${ent_coef}" --data-dir="${data_dir}"
+python ~/escape-rooms/escape-rooms/ppo.py  --wandb-entity="${wandb_entity}" --exp-name="${exp_name}" --track="${track}" --cuda="${cuda}" --total-timesteps="${total_timesteps}" --num-envs="${num_envs}" --num-steps="${num_steps}" --learning-rate="${learning_rate}" --ent-coef="${ent_coef}" --data-dir="${data_dir}"
