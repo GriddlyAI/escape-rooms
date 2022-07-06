@@ -2,7 +2,7 @@ from sge.param_sweeper import get_script
 
 if __name__ == '__main__':
 
-    job_name = 'escape-rooms-sweep-hyperparams-July'
+    job_name = 'escape-rooms-sweep-hyperparams-July-gae'
     script = get_script(
         {
             'sge_time_h': 1,
@@ -24,8 +24,10 @@ if __name__ == '__main__':
             'total-timesteps': [1000000],
             'num-envs': [64],
             'num-steps': [512],
-            'learning-rate': [0.05, 0.01, 0.005, 0.001],
-            'ent-coef': [0.2, 0.1, 0.05, 0.01],
+            'learning-rate': [0.005, 0.001],
+            'ent-coef': [0.05, 0.01],
+            'gae-lambda': [0.65,0.8,0.95],
+            'gae': [0.65, 0.8, 0.95],
             'data-dir': [f'/data/scratch/acw434/{job_name}']
         })
 

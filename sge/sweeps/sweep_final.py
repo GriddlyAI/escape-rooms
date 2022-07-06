@@ -1,8 +1,7 @@
 from sge.param_sweeper import get_script
 
 if __name__ == '__main__':
-
-    job_name = 'escape-rooms-final'
+    job_name = 'escape-rooms-final-July'
     script = get_script(
         {
             'sge_time_h': 1,
@@ -11,7 +10,7 @@ if __name__ == '__main__':
             'sge_num_gpus': 1,
             'sge_memory': 11,
             'sge_memory_unit': 'G',
-            'sge_cluster_name': 'andrena',
+            #'sge_cluster_name': 'andrena',
             'sge_gpu_type': 'ampere',
             'sge_root_directory': '~/escape-rooms',
             'sge_entry_point': '~/escape-rooms/ppo.py'
@@ -24,9 +23,9 @@ if __name__ == '__main__':
             'total-timesteps': [10000000],
             'num-envs': [64],
             'num-steps': [512],
-            'learning-rate': [0.01],
-            'ent-coef': [0.05],
-            'seed': [0,1,2,3,4,5,6,7,8,9],
+            'learning-rate': [0.005],
+            'ent-coef': [0.01],
+            'seed': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
             'data-dir': [f'/data/scratch/acw434/{job_name}'],
             'checkpoint-path': [f'/data/scratch/acw434/{job_name}/checkpoints'],
             'checkpoint-interval': [30]

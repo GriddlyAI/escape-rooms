@@ -495,7 +495,7 @@ if __name__ == "__main__":
         )
 
         # Checkpoint models
-        if update > 0 and update % args.checkpoint_interval == 0:
+        if update % args.checkpoint_interval == 0:
             checkpoint_dir = os.path.join(
                 os.path.abspath(args.checkpoint_path), run_name
             )
