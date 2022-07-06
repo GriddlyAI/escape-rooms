@@ -9,7 +9,7 @@ import onnx
 import torch
 from onnx_tf.backend import prepare
 
-from ppo import Agent
+from escape_rooms.ppo import Agent
 
 """
 This script converts a torch policy models to keras.

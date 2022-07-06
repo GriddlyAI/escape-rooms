@@ -13,6 +13,12 @@ clone this repository and install the dependencies
 pip install -r requirements.txt
 ```
 
+Also install the module:
+
+```shell
+pip install -e .
+```
+
 ## Human Trajectories
 
 We provide recorded trajectories for each of the 100 levels [here](escape_rooms/trajectories/Grafter%20Escape%20Rooms.yaml).
@@ -62,4 +68,44 @@ python eval.py --levels human --seed 48 --checkpoint-dir checkpoints/Grafter_30x
 ```
 
 
+## Using checkpoints in GriddlyJS
+
+To use any of the model checkpoints trained in this repository and view them in GriddlyJS
+
+### Convert checkpoint to keras
+
+Firstly navigate to the directory where torch2keras.py script is located: 
+
+```shell
+cd escape_rooms/utils/tfjs/
+```
+
+Then call the script, pointing it to the required checkpoint and model output
+
+```shell
+python -m torch2keras \
+--xp_path=../../../checkpoints/Grafter_30x30__Default__escape-rooms-final__0__1654619756 \
+--model_tar=checkpoint_300 \
+--output_name=tf_models/agent_model_keras
+```
+
+### Create tfjs model files
+
+When the keras model is generated, it must be converted into a tensorflowjs module. This can be done by installing the [tensorflowjs_converter]() and runnig the following commands:
+
+```shell
+tensorflowjs_converter \
+--input_format=tf_saved_model \
+--saved_model_tags=serve \
+--skip_op_check \
+tf_models/agent_model_keras \
+.
+```
+
+### Run GriddlyJS locally to load the model
+
+If you haven't cloned the Griddly repository already, you can find it [here](https://github.com/Bam4d/Griddly)
+place the generated `group1-shart1of1.bin` and `model.json` into the `public/models/Grafter Escape Rooms/` directory.
+
+Then follow the instructions [here](https://github.com/Bam4d/Griddly/tree/master/js/README.md) on how to run GriddlyJS locally
 

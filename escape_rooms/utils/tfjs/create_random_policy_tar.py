@@ -1,4 +1,4 @@
-from ppo import Agent
+from escape_rooms.ppo import Agent
 import torch
 
 if __name__ == "__main__":

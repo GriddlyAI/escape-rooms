@@ -9,25 +9,16 @@ from distutils.util import strtobool
 import gym
 import numpy as np
 import torch
-import torch.nn as nn
-import torch.optim as optim
-from torch.distributions.categorical import Categorical
-from torch.utils.tensorboard import SummaryWriter
 
-from escape_rooms.level_generators.rotate_translate_generator import (
-    LevelGenerator,
-    RotateTranslateGenerator,
-)
 from escape_rooms.level_generators.crafter_generator import (
     CrafterLevelGenerator,
 )
 from escape_rooms.level_generators.human_generator import HumanDataGenerator
 from escape_rooms.wrapper import EscapeRoomWrapper
 from escape_rooms.procgen_wrapper import (
-    UniformSeedSettingWrapper,
-    SequentialSeedSettingWrapper, SeedListWrapper,
+    SeedListWrapper,
 )
-from ppo import Agent
+from escape_rooms.ppo import Agent
 
 import _pickle as cPickle
 
