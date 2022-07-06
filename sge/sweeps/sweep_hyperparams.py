@@ -14,7 +14,7 @@ if __name__ == '__main__':
             #'sge_cluster_name': 'andrena',
             'sge_gpu_type': 'ampere',
             'sge_root_directory': '~/escape-rooms',
-            'sge_entry_point': '~/escape-rooms/escape-rooms/ppo.py'
+            'sge_entry_point': '~/escape-rooms/escape_rooms/ppo.py'
         },
         {
             'wandb-entity': ['chrisbam4d'],
