@@ -22,6 +22,7 @@ from escape_rooms.level_generators.rotate_translate_generator import (
 from escape_rooms.level_generators.crafter_generator import (
     CrafterLevelGenerator,
 )
+from escape_rooms.utils.pooling_vector_env import PoolingVectorEnv
 from escape_rooms.wrapper import EscapeRoomWrapper
 from escape_rooms.procgen_wrapper import UniformSeedSettingWrapper
 
@@ -59,6 +60,8 @@ def parse_args():
         help="the learning rate of the optimizer")
     parser.add_argument("--num-envs", type=int, default=32,
         help="the number of parallel game environments")
+    parser.add_argument("--num-processes", type=int, default=8,
+                        help="the number of processes to spread the environments across")
     parser.add_argument("--num-steps", type=int, default=256,
         help="the number of steps to run in each environment per policy rollout")
     parser.add_argument("--anneal-lr", type=lambda x: bool(strtobool(x)), default=False, nargs="?", const=True,
@@ -275,11 +278,10 @@ if __name__ == "__main__":
     )
 
     # env setup
-    envs = gym.vector.SyncVectorEnv(
-        [
-            make_env(args.seed + i, i, args.capture_video, run_name)
-            for i in range(args.num_envs)
-        ]
+    envs = PoolingVectorEnv(
+        make_env(args.seed, 0, args.capture_video, run_name),
+        args.num_envs,
+        args.num_processes,
     )
     assert isinstance(
         envs.single_action_space, gym.spaces.Discrete

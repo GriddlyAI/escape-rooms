@@ -2,7 +2,7 @@ from sge.param_sweeper import get_script
 
 if __name__ == '__main__':
 
-    job_name = 'escape-rooms-sweep-SPS'
+    job_name = 'escape-rooms-sweep-SPS-poolingvec'
     script = get_script(
         {
             'sge_time_h': 1,
@@ -11,17 +11,17 @@ if __name__ == '__main__':
             'sge_num_gpus': 1,
             'sge_memory': 11,
             'sge_memory_unit': 'G',
-            'sge_cluster_name': 'andrena',
+            #'sge_cluster_name': 'andrena',
             'sge_gpu_type': 'ampere',
             'sge_root_directory': '~/escape-rooms',
-            'sge_entry_point': '~/escape-rooms/ppo.py'
+            'sge_entry_point': '~/escape-rooms/escape_rooms/ppo.py'
         },
         {
             'wandb-entity': ['chrisbam4d'],
             'exp-name': [f'{job_name}'],
             'track': ['True'],
             'cuda': ['True'],
-            'total-timesteps': [1000000],
+            'total-timesteps': [500000],
             'num-envs': [32,64,128,256,512],
             'num-steps': [32,64,128,256,512],
             'learning-rate': [0.05],

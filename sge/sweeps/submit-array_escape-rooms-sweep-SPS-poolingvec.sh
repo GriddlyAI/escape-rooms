@@ -2,7 +2,7 @@
 #$ -cwd
 #$ -pe smp 8
 #$ -l h_vmem=11G
-#$ -N escape-rooms-sweep-SPS
+#$ -N escape-rooms-sweep-SPS-poolingvec
 #$ -l gpu=1
 #$ -l gpu_type=ampere
 #$ -l h_rt=1:0:0
@@ -11,7 +11,7 @@
 #$ -e logs/
 
 wandb_entity_values=( chrisbam4d )
-exp_name_values=( escape-rooms-sweep-SPS )
+exp_name_values=( escape-rooms-sweep-SPS-poolingvec )
 track_values=( True )
 cuda_values=( True )
 total_timesteps_values=( 500000 )
@@ -19,7 +19,7 @@ num_envs_values=( 32 64 128 256 512 )
 num_steps_values=( 32 64 128 256 512 )
 learning_rate_values=( 0.05 )
 ent_coef_values=( 0.1 )
-data_dir_values=( /data/scratch/acw434/escape-rooms-sweep-SPS )
+data_dir_values=( /data/scratch/acw434/escape-rooms-sweep-SPS-poolingvec )
 trial=${SGE_TASK_ID}
 wandb_entity="${wandb_entity_values[$(( trial % ${#wandb_entity_values[@]} ))]}"
 trial=$(( trial / ${#wandb_entity_values[@]} ))
