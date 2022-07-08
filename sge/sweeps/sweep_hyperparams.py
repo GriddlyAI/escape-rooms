@@ -2,7 +2,7 @@ from sge.param_sweeper import get_script
 
 if __name__ == '__main__':
 
-    job_name = 'escape-rooms-sweep-hyperparams-July-gae-bigger'
+    job_name = 'escape-rooms-sweep-hyperparams-working-gpu'
     script = get_script(
         {
             'sge_time_h': 2,
@@ -22,8 +22,8 @@ if __name__ == '__main__':
             'track': ['True'],
             'cuda': ['True'],
             'total-timesteps': [10000000],
-            'num-envs': [64],
-            'num-steps': [512],
+            'num-envs': [256],
+            'num-steps': [128],
             'learning-rate': [0.05, 0.01, 0.005, 0.001, 0.0005, 0.0001],
             'ent-coef': [0.2, 0.1, 0.05, 0.01, 0.005, 0.001],
             'gae-lambda': [0.65, 0.8, 0.95],

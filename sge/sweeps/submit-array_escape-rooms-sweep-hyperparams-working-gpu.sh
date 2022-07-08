@@ -2,7 +2,7 @@
 #$ -cwd
 #$ -pe smp 8
 #$ -l h_vmem=11G
-#$ -N escape-rooms-sweep-hyperparams-July-gae-bigger
+#$ -N escape-rooms-sweep-hyperparams-working-gpu
 #$ -l gpu=1
 #$ -l gpu_type=ampere
 #$ -l h_rt=2:0:0
@@ -11,7 +11,7 @@
 #$ -e logs/
 
 wandb_entity_values=( chrisbam4d )
-exp_name_values=( escape-rooms-sweep-hyperparams-July-gae-bigger )
+exp_name_values=( escape-rooms-sweep-hyperparams-working-gpu )
 track_values=( True )
 cuda_values=( True )
 total_timesteps_values=( 10000000 )
@@ -20,7 +20,7 @@ num_steps_values=( 128 )
 learning_rate_values=( 0.05 0.01 0.005 0.001 0.0005 0.0001 )
 ent_coef_values=( 0.2 0.1 0.05 0.01 0.005 0.001 )
 gae_lambda_values=( 0.65 0.8 0.95 )
-data_dir_values=( /data/scratch/acw434/escape-rooms-sweep-hyperparams-July-gae-bigger )
+data_dir_values=( /data/scratch/acw434/escape-rooms-sweep-hyperparams-working-gpu )
 trial=${SGE_TASK_ID}
 wandb_entity="${wandb_entity_values[$(( trial % ${#wandb_entity_values[@]} ))]}"
 trial=$(( trial / ${#wandb_entity_values[@]} ))
