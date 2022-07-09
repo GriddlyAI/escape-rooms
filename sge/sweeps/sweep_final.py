@@ -1,7 +1,7 @@
 from sge.param_sweeper import get_script
 
 if __name__ == '__main__':
-    job_name = 'escape-rooms-final-July-50M-gae'
+    job_name = 'escape-rooms-final-poolingvec'
     script = get_script(
         {
             'sge_time_h': 10,
@@ -21,11 +21,11 @@ if __name__ == '__main__':
             'track': ['True'],
             'cuda': ['True'],
             'total-timesteps': [50000000],
-            'num-envs': [64],
-            'num-steps': [512],
+            'num-envs': [256],
+            'num-steps': [128],
             'learning-rate': [0.001],
             'ent-coef': [0.01],
-            'gae-lambda': [0.65, 0.8],
+            'gae-lambda': [0.95],
             'seed': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
             'data-dir': [f'/data/scratch/acw434/{job_name}'],
             'checkpoint-path': [f'/data/scratch/acw434/{job_name}/checkpoints'],
