@@ -29,7 +29,7 @@ if __name__ == '__main__':
             'seed': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
             'data-dir': [f'/data/scratch/acw434/{job_name}'],
             'checkpoint-path': [f'/data/scratch/acw434/{job_name}/checkpoints'],
-            'checkpoint-interval': [6250]
+            'checkpoint-interval': [75]
         })
 
     with open(f'submit-array_{job_name}.sh', 'w') as f:
