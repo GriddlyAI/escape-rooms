@@ -26,9 +26,8 @@ def parse_args():
 if __name__ == "__main__":
     args = parse_args()
     result_dir = "eval_results"
-
-    xs = [i for i in range(500, 6000 + 1, 500)]
-    model_tar_names = [f"checkpoint_{i}" for i in xs]
+    xs = [i for i in range(0, 1575, 75)]
+    model_tar_names = [f"checkpoint_{1 if i==0 else i}" for i in xs]
 
     # xs = [42000]
     # model_tar_names = [f"model_{i}" for i in xs]
@@ -72,8 +71,6 @@ if __name__ == "__main__":
 
             with open(full_path, "rb") as input_file:
                 rets, achievements = cPickle.load(input_file)
-                e = cPickle.load(input_file)
-
             if args.metric == "Return":
                 returns.append(rets)
             else:
@@ -102,7 +99,7 @@ if __name__ == "__main__":
     ax.plot(
         xs,
         mean_returns_human,
-        label="Human Data",
+        label="Human Levels",
         color=sns_colors[0],
         marker="o",
     )
@@ -117,7 +114,7 @@ if __name__ == "__main__":
     ax.plot(
         xs,
         mean_returns_generator,
-        label="Generator Data",
+        label="DR Levels",
         color=sns_colors[1],
         marker="o",
     )
@@ -131,9 +128,9 @@ if __name__ == "__main__":
 
     ax.legend()  # Add a legend.
     ax.set_xlabel(
-        "# Gradient Updates", fontsize=16
+        "# PPO Updates", fontsize=16
     )  # Add an x-label to the axes.
-    ax.set_ylabel(args.metric, fontsize=16)  # Add a y-label to the axes.
+    ax.set_ylabel("Return" if args.metric == "Return" else "Solve Rate", fontsize=16)  # Add a y-label to the axes.
     # plt.xlabel('xlabel', f)
     filename = os.path.join(f"eval_{args.metric}.pdf")
     plt.savefig(filename, bbox_inches="tight")

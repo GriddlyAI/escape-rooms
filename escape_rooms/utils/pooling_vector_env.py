@@ -17,8 +17,9 @@ def _worker(
     num_envs = env_config.fn["num_envs"]
     observation_space = env_config.fn["observation_space"]
     action_space = env_config.fn["action_space"]
+    worker_idx = env_config.fn["worker_idx"]
 
-    envs_cls = [env_cls for _ in range(num_envs)]
+    envs_cls = [lambda: env_cls(worker_idx*num_envs + i) for i in range(num_envs)]
     envs = gym.vector.SyncVectorEnv(envs_cls, observation_space, action_space)
     while True:
         try:
@@ -57,7 +58,7 @@ class PoolingVectorEnv(gym.vector.VectorEnv):
             observation_space=None,
             action_space=None
     ):
-        dummy_env = env_cls()
+        dummy_env = env_cls(0)
         self.metadata = dummy_env.metadata
 
         if (observation_space is None) or (action_space is None):
@@ -79,9 +80,10 @@ class PoolingVectorEnv(gym.vector.VectorEnv):
                 "env_cls": env_cls,
                 "num_envs": self.envs_per_process,
                 "observation_space": observation_space,
-                "action_space": action_space
+                "action_space": action_space,
+                "worker_idx": idx
             }
-            for _ in range(self.num_processes)
+            for idx in range(self.num_processes)
         ]
 
         ctx = mp.get_context("spawn")
